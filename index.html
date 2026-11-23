@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kratom · เครื่องคำนวณการผลิตและผสม</title>
+    <meta name="description" content="KRATOM SAMSEE - Production Calculator PWA">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kratom POS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Kratom POS">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2310b981'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle'%3E🍃%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2310b981'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle'%3E🍃%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {
+                fontFamily: { sans: ['Noto Sans Thai', 'Manrope', 'sans-serif'], display: ['Manrope', 'Noto Sans Thai', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                colors: { void: { 950: '#000000', 900: '#08080a', 850: '#0d0d10', 800: '#131317', 750: '#1a1a1f', 700: '#232328', 600: '#2e2e35', 500: '#404048', 400: '#56565f', 300: '#7a7a85' } }
+            }}
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        html, body { background: #000000; color: #e8e8ea; font-feature-settings: 'ss01','cv01','cv11'; overscroll-behavior-y: none; }
+        body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16,185,129,0.08), transparent 60%), radial-gradient(ellipse 60% 40% at 80% 100%, rgba(6,182,212,0.05), transparent 60%); pointer-events: none; z-index: 0; }
+        body > div { position: relative; z-index: 1; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .card { background: linear-gradient(180deg, #0d0d10 0%, #08080a 100%); border: 1px solid #1a1a1f; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; box-shadow: 0 1px 0 0 rgba(255,255,255,0.02) inset; }
+        .card:hover { border-color: #232328; }
+        .card.active-green { background: linear-gradient(180deg, rgba(16,185,129,0.06) 0%, #08080a 55%); border-color: rgba(16,185,129,0.4); box-shadow: 0 0 0 1px rgba(16,185,129,0.15), 0 8px 40px -10px rgba(16,185,129,0.15); }
+        .card.active-cyan { background: linear-gradient(180deg, rgba(6,182,212,0.06) 0%, #08080a 55%); border-color: rgba(6,182,212,0.4); box-shadow: 0 0 0 1px rgba(6,182,212,0.15), 0 8px 40px -10px rgba(6,182,212,0.15); }
+        .card.active-amber { background: linear-gradient(180deg, rgba(245,158,11,0.06) 0%, #08080a 55%); border-color: rgba(245,158,11,0.4); box-shadow: 0 0 0 1px rgba(245,158,11,0.15), 0 8px 40px -10px rgba(245,158,11,0.15); }
+        .min-input { background: transparent; border: none; color: #ffffff; font-family: 'JetBrains Mono', monospace; font-weight: 600; transition: color 0.2s ease; min-width: 0; }
+        .min-input:focus { outline: none; }
+        .num-field { display: flex; align-items: center; gap: 4px; position: relative; }
+        .num-step { width: 26px; height: 26px; border-radius: 6px; background: #0a0a0c; border: 1px solid #1f1f24; color: #7a7a85; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; transition: all 0.15s ease; user-select: none; line-height: 1; }
+        .num-step:hover { background: #131317; border-color: #2e2e35; color: #ffffff; }
+        .num-step:active { transform: scale(0.9); background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.5); color: #34d399; }
+        .input-wrap { background: #08080a; border: 1px solid #1a1a1f; transition: all 0.2s ease; }
+        .input-wrap:focus-within { border-color: #2e2e35; background: #0d0d10; box-shadow: 0 0 0 3px rgba(16,185,129,0.08); }
+        input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; width: 100%; height: 24px; }
+        input[type=range]::-webkit-slider-runnable-track { background: linear-gradient(90deg, #10b981 0%, #10b981 var(--pct, 50%), #1a1a1f var(--pct, 50%), #1a1a1f 100%); height: 4px; border-radius: 9999px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; background: #ffffff; height: 16px; width: 16px; border-radius: 9999px; box-shadow: 0 0 0 4px rgba(16,185,129,0.2), 0 2px 8px rgba(0,0,0,0.8); transition: transform 0.15s ease, box-shadow 0.2s ease; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(16,185,129,0.25), 0 2px 12px rgba(0,0,0,0.9); }
+        input[type=range].accent-amber::-webkit-slider-runnable-track { background: linear-gradient(90deg, #f59e0b 0%, #f59e0b var(--pct, 50%), #1a1a1f var(--pct, 50%), #1a1a1f 100%); }
+        input[type=range].accent-amber::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(245,158,11,0.2), 0 2px 8px rgba(0,0,0,0.8); }
+        .btn { transition: all 0.2s ease; border: 1px solid #1f1f24; background: #0d0d10; color: #a8a8b0; font-weight: 600; }
+        .btn:hover { background: #131317; border-color: #2e2e35; color: #ffffff; }
+        .btn:active { transform: scale(0.98); }
+        .btn-danger { color: #f87171; border-color: rgba(248,113,113,0.2); }
+        .btn-danger:hover { border-color: rgba(248,113,113,0.5); background: rgba(248,113,113,0.06); color: #fca5a5; }
+        .btn-success { color: #4ade80; border-color: rgba(74,222,128,0.2); }
+        .btn-success:hover { border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06); color: #86efac; }
+        .btn-primary { color: #22d3ee; border-color: rgba(6,182,212,0.3); }
+        .btn-primary:hover { border-color: rgba(6,182,212,0.6); background: rgba(6,182,212,0.08); color: #67e8f9; }
+        .quick-btn { padding: 7px 12px; border-radius: 8px; border: 1px solid #1a1a1f; background: #08080a; color: #7a7a85; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease; white-space: nowrap; flex-shrink: 0; letter-spacing: -0.01em; }
+        .quick-btn:hover { background: #131317; border-color: #2e2e35; color: #e8e8ea; transform: translateY(-1px); }
+        .quick-btn:active { transform: scale(0.95); }
+        .quick-btn.active { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.6); color: #34d399; font-weight: 700; box-shadow: 0 0 0 3px rgba(16,185,129,0.08), 0 4px 12px -4px rgba(16,185,129,0.3); }
+        .quick-btn.cyan { color: #67e8f9; border-color: rgba(6,182,212,0.15); }
+        .quick-btn.cyan:hover { background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); color: #22d3ee; }
+        .quick-btn.cyan.active { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.7); color: #22d3ee; box-shadow: 0 0 0 3px rgba(6,182,212,0.1), 0 4px 12px -4px rgba(6,182,212,0.3); }
+        .quick-btn.amber { color: #fcd34d; border-color: rgba(245,158,11,0.15); }
+        .quick-btn.amber:hover { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+        .quick-btn.amber.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.7); color: #fbbf24; box-shadow: 0 0 0 3px rgba(245,158,11,0.1), 0 4px 12px -4px rgba(245,158,11,0.3); }
+        .quick-btn.rose { color: #fda4af; border-color: rgba(244,63,94,0.15); }
+        .quick-btn.rose:hover { background: rgba(244,63,94,0.08); border-color: rgba(244,63,94,0.4); color: #fb7185; }
+        .quick-btn.rose.active { background: rgba(244,63,94,0.15); border-color: rgba(244,63,94,0.7); color: #fb7185; box-shadow: 0 0 0 3px rgba(244,63,94,0.1), 0 4px 12px -4px rgba(244,63,94,0.3); }
+        .quick-strip { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; -ms-overflow-style: none; scrollbar-width: none; }
+        .quick-strip::-webkit-scrollbar { display: none; }
+        .dot { width: 7px; height: 7px; border-radius: 9999px; background: #404048; transition: all 0.2s ease; }
+        .dot.active { background: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+        .dot.green { background: #10b981; } .dot.green.active { box-shadow: 0 0 10px rgba(16,185,129,0.7); }
+        .dot.yellow { background: #f59e0b; } .dot.yellow.active { box-shadow: 0 0 10px rgba(245,158,11,0.7); }
+        .dot.red { background: #ef4444; } .dot.red.active { box-shadow: 0 0 10px rgba(239,68,68,0.7); }
+        .dot.cyan { background: #06b6d4; } .dot.cyan.active { box-shadow: 0 0 10px rgba(6,182,212,0.7); }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, #1a1a1f 20%, #1a1a1f 80%, transparent); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4,0,0.2,1); }
+        #toast { background: #0d0d10; border: 1px solid #1f1f24; color: #ffffff; font-family: 'JetBrains Mono', monospace; font-weight: 600; box-shadow: 0 20px 60px -15px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.03) inset; backdrop-filter: blur(10px); }
+        ::selection { background: #10b981; color: #000000; }
+        .tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 9px; border-radius: 5px; background: #0d0d10; color: #7a7a85; border: 1px solid #1a1a1f; text-transform: uppercase; }
+        .stat-green { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02)); border: 1px solid rgba(16,185,129,0.22); }
+        .stat-cyan { background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(6,182,212,0.02)); border: 1px solid rgba(6,182,212,0.22); }
+        .stat-amber { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.02)); border: 1px solid rgba(245,158,11,0.22); }
+        .stat-rose { background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(244,63,94,0.02)); border: 1px solid rgba(244,63,94,0.22); }
+        .stat-violet { background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(167,139,250,0.02)); border: 1px solid rgba(167,139,250,0.22); }
+        .val-green { color: #34d399; } .val-cyan { color: #22d3ee; } .val-amber { color: #fbbf24; }
+        .val-rose { color: #fb7185; } .val-violet { color: #a78bfa; } .val-pink { color: #f472b6; }
+        .val-orange { color: #fb923c; } .val-lime { color: #a3e635; }
+        .tab-btn { padding: 12px 20px; font-size: 13.5px; font-weight: 600; color: #56565f; border-bottom: 2px solid transparent; transition: all 0.2s ease; white-space: nowrap; position: relative; letter-spacing: -0.01em; }
+        .tab-btn:hover { color: #a8a8b0; }
+        .tab-btn.active { color: #ffffff; border-bottom-color: #ffffff; }
+        .tab-btn.active.mix-active { border-bottom-color: #06b6d4; color: #22d3ee; }
+        .tab-btn.active.settings-active { border-bottom-color: #a78bfa; color: #a78bfa; }
+        .preset-btn { padding: 14px 16px; border-radius: 12px; border: 1px solid #1a1a1f; background: #08080a; transition: all 0.25s ease; text-align: left; position: relative; overflow: hidden; }
+        .preset-btn:hover { border-color: #2e2e35; background: #0d0d10; transform: translateY(-1px); }
+        .preset-btn.active-red { border-color: rgba(239,68,68,0.5); background: linear-gradient(135deg, rgba(239,68,68,0.1), #08080a 60%); box-shadow: 0 0 0 1px rgba(239,68,68,0.15), 0 8px 32px -12px rgba(239,68,68,0.3); }
+        .preset-btn.active-yellow { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.1), #08080a 60%); box-shadow: 0 0 0 1px rgba(245,158,11,0.15), 0 8px 32px -12px rgba(245,158,11,0.3); }
+        .result-item { padding: 14px; border-radius: 12px; background: #08080a; border: 1px solid #1a1a1f; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .result-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+        .num-highlight { font-variant-numeric: tabular-nums; letter-spacing: -0.03em; font-feature-settings: 'tnum'; }
+        .settings-group { background: linear-gradient(180deg, #0d0d10 0%, #08080a 100%); border: 1px solid #1a1a1f; border-radius: 16px; padding: 22px; position: relative; overflow: hidden; }
+        .settings-group::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+        .settings-group.g-green::before { background: linear-gradient(90deg, transparent, #10b981, transparent); }
+        .settings-group.g-rose::before { background: linear-gradient(90deg, transparent, #ef4444, transparent); }
+        .settings-group.g-amber::before { background: linear-gradient(90deg, transparent, #f59e0b, transparent); }
+        .settings-group.g-cyan::before { background: linear-gradient(90deg, transparent, #06b6d4, transparent); }
+        .cost-summary { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.03)); border: 1px solid rgba(16,185,129,0.22); border-radius: 16px; padding: 22px; position: relative; overflow: hidden; }
+        .cost-summary::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #10b981, #06b6d4, transparent); }
+        .collapse-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 7px; background: #08080a; border: 1px solid #1f1f24; color: #7a7a85; font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 600; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.02em; }
+        .collapse-btn:hover { background: #131317; border-color: #2e2e35; color: #ffffff; }
+        .collapse-btn svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .collapse-btn.collapsed svg { transform: rotate(-90deg); }
+        .collapse-body { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; }
+        .collapse-body.hidden-state { max-height: 0 !important; opacity: 0; pointer-events: none; }
+        .glass-header { background: rgba(0,0,0,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #131317; }
+        .logo-mark { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 0 0 1px rgba(16,185,129,0.3), 0 4px 20px -4px rgba(16,185,129,0.5), inset 0 1px 0 0 rgba(255,255,255,0.15); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #232328; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2e2e35; }
+        #installBanner { background: linear-gradient(135deg, #0d0d10, #08080a); border: 1px solid rgba(16,185,129,0.4); box-shadow: 0 20px 60px -15px rgba(0,0,0,1), 0 0 0 1px rgba(16,185,129,0.15), 0 0 60px -20px rgba(16,185,129,0.4); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+        #installBanner.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
+        #offlineIndicator { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); border: 1px solid rgba(245,158,11,0.4); color: #fbbf24; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        #offlineIndicator.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+        #updateBanner { background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.4); color: #22d3ee; backdrop-filter: blur(10px); }
+        @media all and (display-mode: standalone) {
+            body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+            header.sticky { padding-top: env(safe-area-inset-top); height: calc(64px + env(safe-area-inset-top)); }
+        }
+        #loadingSkeleton { position: fixed; inset: 0; background: #000000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease; }
+        #loadingSkeleton.hidden { opacity: 0; pointer-events: none; }
+        .skeleton-spinner { width: 48px; height: 48px; border: 3px solid rgba(16,185,129,0.2); border-top-color: #10b981; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bm-info-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fbbf24; letter-spacing: 0.02em; }
+        .ing-row { transition: all 0.18s ease; }
+        .ing-row:hover { border-color: #232328 !important; background: #0d0d10 !important; }
+        .ing-row input[type="checkbox"] { cursor: pointer; accent-color: #10b981; }
+        .ing-row input[type="checkbox"]:disabled { opacity: 0.6; cursor: not-allowed; }
+        .ing-row input[type="text"][readonly] { cursor: default; }
+        .ing-row input::placeholder { color: #404048; }
+        .ing-add-btn { transition: all 0.18s ease; }
+        .ing-add-btn:hover { background: rgba(16,185,129,0.1) !important; border-color: rgba(16,185,129,0.5) !important; color: #34d399 !important; }
+        .ing-add-btn:active { transform: scale(0.96); }
+        .water-info-box { background: linear-gradient(135deg, rgba(6,182,212,0.06), rgba(16,185,129,0.03)); border: 1px solid rgba(6,182,212,0.22); border-radius: 10px; }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen">
+    
+    <div id="loadingSkeleton"><div class="flex flex-col items-center gap-4"><div class="skeleton-spinner"></div><p class="font-mono text-xs text-void-400 tracking-widest">LOADING...</p></div></div>
+
+    <div id="offlineIndicator" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg font-mono text-xs font-bold hidden"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span><span>โหมดออฟไลน์ · ทำงานจากแคช</span></div></div>
+
+    <div id="updateBanner" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl font-mono text-xs font-bold hidden"><div class="flex items-center gap-3"><span>🔄 มีอัปเดตใหม่</span><button id="reloadBtn" class="px-3 py-1 rounded-md bg-cyan-400 text-black font-bold hover:bg-cyan-300 transition-colors">อัปเดตเลย</button></div></div>
+
+    <div class="min-h-screen flex flex-col">
+
+        <header class="sticky top-0 z-40 glass-header">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center gap-3">
+                        <div class="logo-mark w-10 h-10 rounded-xl flex items-center justify-center"><span class="text-lg">🍃</span></div>
+                        <div>
+                            <div class="flex items-center gap-2"><span class="font-display font-extrabold text-sm text-white tracking-tight">KRATOM</span><span class="tag">S.SAMSEE</span></div>
+                            <p class="text-[10.5px] text-void-400 font-medium mt-0.5 tracking-wide">Production Calculator</p>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center gap-5">
+                        <div class="flex items-center gap-2 text-xs text-void-300 font-medium"><span class="dot red"></span><span class="font-mono tracking-wide">ฝาแดง</span></div>
+                        <div class="flex items-center gap-2 text-xs text-void-300 font-medium"><span class="dot yellow"></span><span class="font-mono tracking-wide">BM</span></div>
+                        <div class="w-px h-5 bg-void-700"></div>
+                        <div class="font-mono text-xs text-void-300 font-semibold tabular-nums tracking-wide" id="clock">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">KRATOM <span class="text-void-500 font-light">·</span> S.SAMSEE</h1>
+                        <p class="text-sm text-void-300 mt-1.5 font-medium">คำนวณการผลิตน้ำดิบ · ผสม · ต้นทุน · ROI</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-void-800 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none">
+                    <div class="flex gap-1">
+                        <button class="tab-btn active" data-tab="boil">🍃 คำนวณน้ำดิบ</button>
+                        <button class="tab-btn mix-active" data-tab="mix">🥤 คำนวณน้ำผสม</button>
+                        <button class="tab-btn settings-active" data-tab="settings">⚙️ ตั้งค่าต้นทุน & สูตร</button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: BOILING -->
+                <div id="tab-boil" class="tab-content">
+                    <div class="flex justify-end mb-4">
+                        <button id="resetBoilBtn" class="btn btn-danger inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                            <span>รีเซ็ตค่า</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                        <div id="card-leaves" class="card active-green rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4"><span class="tag" style="color:#34d399; border-color:rgba(16,185,129,0.35); background:rgba(16,185,129,0.06);">01 · INPUT</span><span class="dot green active"></span></div>
+                            <div class="num-field mb-2">
+                                <button type="button" class="num-step" data-step-target="inputLeaves" data-step-value="-0.1">−</button>
+                                <input id="inputLeaves" type="number" inputmode="decimal" step="0.1" min="0" value="3" class="min-input w-full text-3xl tracking-tight bg-transparent num-highlight text-center">
+                                <button type="button" class="num-step" data-step-target="inputLeaves" data-step-value="0.1">+</button>
+                                <span class="text-sm text-void-300 font-mono font-semibold shrink-0 ml-1">kg</span>
+                            </div>
+                            <div class="flex items-center justify-between"><span class="text-xs text-void-300 font-medium">ใบกระท่อมสด</span><span class="text-xs font-mono val-green font-semibold" id="costLeaves">฿300</span></div>
+                            <div class="mt-4 pt-4 border-t border-void-800">
+                                <div class="text-[9px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">Quick Select</div>
+                                <div class="quick-strip">
+                                    <button class="quick-btn" data-quick-boil="1">1</button><button class="quick-btn" data-quick-boil="2">2</button>
+                                    <button class="quick-btn" data-quick-boil="2.5">2.5</button><button class="quick-btn active" data-quick-boil="3">3</button>
+                                    <button class="quick-btn" data-quick-boil="3.5">3.5</button><button class="quick-btn" data-quick-boil="4">4</button>
+                                    <button class="quick-btn" data-quick-boil="5">5</button><button class="quick-btn" data-quick-boil="10">10</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="card-water" class="card rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4"><span class="tag" style="color:#22d3ee; border-color:rgba(6,182,212,0.35); background:rgba(6,182,212,0.06);">02 · PROCESS</span><span class="dot cyan"></span></div>
+                            <div class="num-field mb-2">
+                                <button type="button" class="num-step" data-step-target="inputWater" data-step-value="-1">−</button>
+                                <input id="inputWater" type="number" inputmode="decimal" step="1" min="0" value="66" class="min-input w-full text-3xl tracking-tight bg-transparent num-highlight text-center">
+                                <button type="button" class="num-step" data-step-target="inputWater" data-step-value="1">+</button>
+                                <span class="text-sm text-void-300 font-mono font-semibold shrink-0 ml-1">L</span>
+                            </div>
+                            <div class="flex items-center justify-between"><span class="text-xs text-void-300 font-medium">น้ำเปล่าเติมหม้อ</span><span class="text-xs font-mono val-cyan font-semibold" id="ratioLabel">22:1</span></div>
+                            <div class="mt-4 pt-4 border-t border-void-800">
+                                <div class="text-[9px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">Quick Select</div>
+                                <div class="quick-strip">
+                                    <button class="quick-btn cyan" data-quick-water="40">40</button><button class="quick-btn cyan" data-quick-water="50">50</button>
+                                    <button class="quick-btn cyan" data-quick-water="60">60</button><button class="quick-btn cyan active" data-quick-water="66">66</button>
+                                    <button class="quick-btn cyan" data-quick-water="70">70</button><button class="quick-btn cyan" data-quick-water="80">80</button>
+                                    <button class="quick-btn cyan" data-quick-water="100">100</button><button class="quick-btn cyan" data-quick-water="150">150</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="card-yield" class="card rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4"><span class="tag" style="color:#fbbf24; border-color:rgba(245,158,11,0.35); background:rgba(245,158,11,0.06);">03 · OUTPUT</span><span class="dot yellow"></span></div>
+                            <div class="num-field mb-2">
+                                <button type="button" class="num-step" data-step-target="inputYield" data-step-value="-0.5">−</button>
+                                <input id="inputYield" type="number" inputmode="decimal" step="0.5" min="0" value="52.8" class="min-input w-full text-3xl tracking-tight bg-transparent num-highlight text-center">
+                                <button type="button" class="num-step" data-step-target="inputYield" data-step-value="0.5">+</button>
+                                <span class="text-sm text-void-300 font-mono font-semibold shrink-0 ml-1">L</span>
+                            </div>
+                            <div class="flex items-center justify-between"><span class="text-xs text-void-300 font-medium">น้ำดิบสกัดได้</span><span class="text-xs font-mono val-amber font-semibold" id="extractLabel">80%</span></div>
+                            <div class="mt-4 pt-4 border-t border-void-800">
+                                <div class="text-[9px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">Quick Select</div>
+                                <div class="quick-strip">
+                                    <button class="quick-btn amber" data-quick-yield="0.7">70%</button><button class="quick-btn amber" data-quick-yield="0.75">75%</button>
+                                    <button class="quick-btn amber active" data-quick-yield="0.8">80%</button><button class="quick-btn amber" data-quick-yield="0.85">85%</button>
+                                    <button class="quick-btn amber" data-quick-yield="0.9">90%</button><button class="quick-btn amber" data-quick-yield="0.95">95%</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl p-6 mb-4">
+                        <div class="flex items-center gap-2 mb-6"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div><span class="text-xs font-semibold text-void-300 uppercase tracking-widest font-mono">Parameters · การต้ม</span></div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <div class="flex items-baseline justify-between mb-3"><span class="text-sm text-void-200 font-medium">อัตราส่วนต้ม</span><span class="font-mono text-sm val-green font-bold tabular-nums" id="ratioValue">22 : 1</span></div>
+                                <input id="ratioSlider" type="range" min="15" max="30" step="0.5" value="22">
+                                <div class="flex justify-between text-[10px] text-void-400 font-mono font-semibold mt-2 tracking-wider"><span>15</span><span>22</span><span>30</span></div>
+                            </div>
+                            <div>
+                                <div class="flex items-baseline justify-between mb-3"><span class="text-sm text-void-200 font-medium">เปอร์เซ็นต์การสกัด</span><span class="font-mono text-sm val-amber font-bold tabular-nums" id="extractValue">80%</span></div>
+                                <input id="extractSlider" type="range" min="65" max="95" step="1" value="80" class="accent-amber">
+                                <div class="flex justify-between text-[10px] text-void-400 font-mono font-semibold mt-2 tracking-wider"><span>65%</span><span>80%</span><span>95%</span></div>
+                            </div>
+                        </div>
+                        <div class="divider my-6"></div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ราคาใบ / kg</label><div class="flex items-baseline gap-1"><span class="text-xs val-green font-bold">฿</span><input id="pricePerKg" type="number" inputmode="decimal" step="0.01" value="100" min="0" class="min-input w-full text-base num-highlight"></div></div>
+                            <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ค่าแก๊ส / L</label><div class="flex items-baseline gap-1"><span class="text-xs val-cyan font-bold">฿</span><input id="gasPerL" type="number" inputmode="decimal" step="0.01" value="2" min="0" class="min-input w-full text-base num-highlight"></div></div>
+                            <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ขวดบรรจุ</label><div class="flex items-baseline gap-1"><span class="text-xs text-void-300 font-bold">฿</span><input id="bottleCostBoil" type="number" inputmode="decimal" step="0.01" value="8" min="0" class="min-input w-full text-base num-highlight text-void-200"></div></div>
+                            <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ต้นทุนแฝง</label><div class="flex items-baseline gap-1"><span class="text-xs text-void-300 font-bold">฿</span><input id="hiddenCostBoil" type="number" inputmode="decimal" step="0.01" value="0" min="0" class="min-input w-full text-base num-highlight text-void-200"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                                <span class="text-xs font-semibold text-void-300 uppercase tracking-widest font-mono">Cost Analysis</span>
+                                <span class="tag" style="color:#34d399; border-color:rgba(16,185,129,0.35); background:rgba(16,185,129,0.06);">YIELD <span class="font-bold text-white" id="yieldBadge">52.8</span> L</span>
+                            </div>
+                            <button class="collapse-btn" data-collapse="costAnalysisBoil">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                <span class="collapse-label">ซ่อน</span>
+                            </button>
+                        </div>
+                        <div id="costAnalysisBoil" class="collapse-body" style="max-height: 2000px;">
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                                <div class="rounded-xl p-4 stat-green"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">ต้นทุนใบ</div><div class="font-mono text-lg val-green font-bold num-highlight" id="costLeafBoil">฿300</div></div>
+                                <div class="rounded-xl p-4 stat-cyan"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">ค่าแก๊ส/ไฟ</div><div class="font-mono text-lg val-cyan font-bold num-highlight" id="costGasBoil">฿132</div></div>
+                                <div class="rounded-xl p-4 stat-amber"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">ขวด+แฝง</div><div class="font-mono text-lg val-amber font-bold num-highlight" id="costBottleBoil">฿0</div></div>
+                                <div class="rounded-xl p-4 stat-violet"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">รวมทั้งหมด</div><div class="font-mono text-lg val-violet font-bold num-highlight" id="totalCostBoil">฿432</div></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium flex-1">① ต้นทุนใบกระท่อม <span class="text-void-400 text-xs font-mono">(<span id="leafQtyBoil">3</span> kg × ฿<span id="leafPriceBoil">100</span>)</span></span><span class="font-mono val-green font-bold tabular-nums shrink-0" id="breakLeaf">฿300.00</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium flex-1">② ค่าแก๊ส / ไฟ <span class="text-void-400 text-xs font-mono">(<span id="waterQtyBoil">66</span> L × ฿<span id="gasPriceBoil">2</span>)</span></span><span class="font-mono val-cyan font-bold tabular-nums shrink-0" id="breakGas">฿132.00</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium flex-1">③ ขวดบรรจุ <span class="text-void-400 text-xs font-mono">(<span id="bottleCountBoil">52</span> ขวด × ฿<span id="bottlePriceBoil">8</span>)</span></span><span class="font-mono val-amber font-bold tabular-nums shrink-0" id="breakBottle">฿416.00</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium flex-1">④ ต้นทุนแฝง <span class="text-void-400 text-xs font-mono">(<span id="hiddenBottleQty">52</span> ขวด × ฿<span id="hiddenPriceBoil">0</span>)</span></span><span class="font-mono val-violet font-bold tabular-nums shrink-0" id="breakHidden">฿0.00</span></div>
+                                <div class="divider"></div>
+                                <div class="flex items-center justify-between text-base gap-2"><span class="text-white font-bold">รวมต้นทุนการผลิตน้ำดิบ</span><span class="font-mono val-green font-bold tabular-nums text-lg" id="totalCost2">฿848.00</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium">ต้นทุนเฉลี่ย / ลิตร</span><span class="font-mono val-amber font-bold tabular-nums" id="costPerL2">฿16.06</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium">ต้นทุนเฉลี่ย / ขวด (1,000 ml)</span><span class="font-mono val-amber font-bold tabular-nums" id="costPerBottleBoil">฿16.06</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: MIXING -->
+                <div id="tab-mix" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+                        <div class="inline-flex rounded-lg p-1 bg-void-900 border border-void-750">
+                            <button id="modeForward" class="px-4 py-2 rounded-md text-xs font-bold bg-void-750 text-white transition-colors">คำนวณไปข้างหน้า</button>
+                            <button id="modeReverse" class="px-4 py-2 rounded-md text-xs font-semibold text-void-300 hover:text-white transition-colors">ย้อนกลับจากจำนวนขวด</button>
+                        </div>
+                        <button id="resetMixBtn" class="btn btn-danger inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                            <span>รีเซ็ตค่า</span>
+                        </button>
+                    </div>
+
+                    <div class="card rounded-2xl p-5 mb-5">
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                            <div>
+                                <div class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div><span class="text-xs font-semibold text-void-300 uppercase tracking-widest font-mono">เลือกสูตร</span></div>
+                                <p class="text-[11px] text-void-400 mt-1.5">ติ๊กวัตถุดิบ · เพิ่ม/ลบ · แก้ไขได้ในแท็บ "ตั้งค่าต้นทุน & สูตร"</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button data-preset="red" class="preset-btn active-red">
+                                <div class="flex items-center gap-2 mb-2"><span class="dot red"></span><span class="text-sm font-bold" style="color:#fca5a5;">สูตรฝาแดง</span></div>
+                                <p class="text-[10.5px] text-void-300 font-mono leading-relaxed font-medium" id="presetRedDesc">กำลังโหลด...</p>
+                            </button>
+                            <button data-preset="bm" class="preset-btn">
+                                <div class="flex items-center gap-2 mb-2"><span class="dot yellow"></span><span class="text-sm font-bold text-white">สูตร BM</span></div>
+                                <p class="text-[10.5px] text-void-300 font-mono leading-relaxed font-medium" id="presetBMDesc">กำลังโหลด...</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="forwardInputs" class="card rounded-2xl p-5 mb-5">
+                        <div class="flex items-center justify-between mb-4"><span class="tag" style="color:#22d3ee; border-color:rgba(6,182,212,0.35); background:rgba(6,182,212,0.06);">น้ำดิบที่ใช้ผสม (รวม)</span><span class="dot cyan active"></span></div>
+                        <div class="num-field mb-2">
+                            <button type="button" class="num-step" data-step-target="mixInputWater" data-step-value="-0.5">−</button>
+                            <input id="mixInputWater" type="number" inputmode="decimal" step="0.5" min="0" value="30" class="min-input w-full text-4xl tracking-tight bg-transparent num-highlight val-cyan text-center">
+                            <button type="button" class="num-step" data-step-target="mixInputWater" data-step-value="0.5">+</button>
+                            <span class="text-base text-void-300 font-mono font-semibold shrink-0 ml-1">ลิตร</span>
+                        </div>
+                        <p class="text-xs text-void-400 mt-2 font-medium">กรอกปริมาณน้ำรวม · ระบบหัก % การสูญเสียเป็นน้ำสุทธิอัตโนมัติ</p>
+                        <div class="mt-3 water-info-box px-3 py-2.5">
+                            <div class="flex items-center justify-between text-[11px] font-mono">
+                                <span class="text-void-300">น้ำสุทธิ (หัก <span id="mixLossForwardLabel">10</span>%):</span>
+                                <span class="val-cyan font-bold"><span id="mixNetWaterForward">27.00</span> L</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-void-800">
+                            <div class="text-[9px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">Quick Select</div>
+                            <div class="quick-strip">
+                                <button class="quick-btn cyan" data-quick-mixwater="5">5</button><button class="quick-btn cyan" data-quick-mixwater="10">10</button>
+                                <button class="quick-btn cyan" data-quick-mixwater="15">15</button><button class="quick-btn cyan" data-quick-mixwater="20">20</button>
+                                <button class="quick-btn cyan" data-quick-mixwater="21">21</button><button class="quick-btn cyan active" data-quick-mixwater="30">30</button>
+                                <button class="quick-btn cyan" data-quick-mixwater="40">40</button><button class="quick-btn cyan" data-quick-mixwater="50">50</button>
+                                <button class="quick-btn cyan" data-quick-mixwater="60">60</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reverseInputs" class="card rounded-2xl p-5 mb-5 hidden">
+                        <div class="flex items-center justify-between mb-4"><span class="tag" style="color:#34d399; border-color:rgba(16,185,129,0.35); background:rgba(16,185,129,0.06);">จำนวนขวดที่ต้องการ</span><span class="dot green active"></span></div>
+                        <div class="num-field mb-2">
+                            <button type="button" class="num-step" data-step-target="mixInputBottles" data-step-value="-1">−</button>
+                            <input id="mixInputBottles" type="number" inputmode="decimal" step="1" min="0" value="40" class="min-input w-full text-4xl tracking-tight bg-transparent num-highlight val-green text-center">
+                            <button type="button" class="num-step" data-step-target="mixInputBottles" data-step-value="1">+</button>
+                            <span class="text-base text-void-300 font-mono font-semibold shrink-0 ml-1">ขวด</span>
+                        </div>
+                        <p class="text-xs text-void-400 mt-2 font-medium">ระบบจะย้อนกลับมาคำนวณน้ำรวมที่ต้องใช้ (ก่อนหัก % สูญเสีย)</p>
+                        <div class="mt-3 water-info-box px-3 py-2.5">
+                            <div class="flex items-center justify-between text-[11px] font-mono">
+                                <span class="text-void-300">ต้องใช้น้ำรวม:</span>
+                                <span class="val-cyan font-bold"><span id="mixTotalWaterReverse">37.33</span> L</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-void-800">
+                            <div class="text-[9px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">Quick Select</div>
+                            <div class="quick-strip">
+                                <button class="quick-btn rose" data-quick-mixbottle="10">10</button><button class="quick-btn rose" data-quick-mixbottle="20">20</button>
+                                <button class="quick-btn rose" data-quick-mixbottle="30">30</button><button class="quick-btn rose active" data-quick-mixbottle="40">40</button>
+                                <button class="quick-btn rose" data-quick-mixbottle="50">50</button><button class="quick-btn rose" data-quick-mixbottle="70">70</button>
+                                <button class="quick-btn rose" data-quick-mixbottle="100">100</button><button class="quick-btn rose" data-quick-mixbottle="200">200</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl p-6 mb-5">
+                        <div class="flex items-center justify-between mb-5 flex-wrap gap-2">
+                            <div class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div><span class="text-xs font-semibold text-void-300 uppercase tracking-widest font-mono">วัตถุดิบที่ต้องใช้</span></div>
+                            <div class="flex items-center gap-2">
+                                <span class="bm-info-badge hidden" id="bmFormulaBadge">📌 สูตร BM</span>
+                                <span class="tag" id="mixFormulaTag" style="color:#fca5a5; border-color:rgba(239,68,68,0.35); background:rgba(239,68,68,0.06);">สูตรฝาแดง</span>
+                            </div>
+                        </div>
+                        <div id="mixIngredients" class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4"></div>
+                        <div class="divider mb-4"></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                            <div class="flex items-center justify-between"><span class="text-void-300 font-medium">ปริมาตรรวม</span><span class="font-mono val-cyan font-bold tabular-nums" id="resTotalVol">40.20 L</span></div>
+                            <div class="flex items-center justify-between"><span class="text-void-300 font-medium">จำนวนขวด</span><span class="font-mono val-green font-bold tabular-nums"><span id="resBottles">40</span> ขวด</span></div>
+                            <div class="flex items-center justify-between"><span class="text-void-300 font-medium">ขนาดขวด</span><span class="font-mono text-void-200 font-semibold tabular-nums" id="resBottleSize">1,000 ml</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
+                                <span class="text-xs font-semibold text-void-300 uppercase tracking-widest font-mono">Cost Analysis</span>
+                                <span class="tag" style="color:#22d3ee; border-color:rgba(6,182,212,0.35); background:rgba(6,182,212,0.06);">BOTTLES <span class="font-bold text-white" id="mixBottlesBadge">40</span></span>
+                            </div>
+                            <button class="collapse-btn" data-collapse="costAnalysisMix">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                <span class="collapse-label">ซ่อน</span>
+                            </button>
+                        </div>
+                        <div id="costAnalysisMix" class="collapse-body" style="max-height: 2500px;">
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                                <div class="rounded-xl p-4 stat-amber"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">ต้นทุนรวม</div><div class="font-mono text-lg val-amber font-bold num-highlight" id="mixTotalCost">฿0</div></div>
+                                <div class="rounded-xl p-4 stat-violet"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">ต้นทุน / ขวด</div><div class="font-mono text-lg val-violet font-bold num-highlight" id="mixCostPerBottle">฿0</div></div>
+                                <div class="rounded-xl p-4 stat-cyan"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">รายรับ</div><div class="font-mono text-lg val-cyan font-bold num-highlight" id="mixRevenue">฿0</div></div>
+                                <div class="rounded-xl p-4 stat-green"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-2 font-mono font-bold">กำไรสุทธิ</div><div class="font-mono text-lg val-green font-bold num-highlight" id="mixProfit">฿0</div></div>
+                            </div>
+                            <div id="mixCostRows" class="space-y-2.5 mb-5 text-xs"></div>
+                            <div class="divider mb-5"></div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-base gap-2"><span class="text-white font-bold">รวมต้นทุนการผลิตน้ำผสม</span><span class="font-mono val-amber font-bold tabular-nums text-lg" id="mixTotalCost2">฿0</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium">ต้นทุน / ขวด</span><span class="font-mono val-violet font-bold tabular-nums" id="mixCostPerBottle2">฿0</span></div>
+                                <div class="divider"></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-300 font-medium">รายรับ</span><span class="font-mono val-cyan font-bold tabular-nums" id="mixRevenue2">฿0</span></div>
+                                <div class="flex items-center justify-between text-sm gap-2"><span class="text-void-200 font-semibold">กำไรสุทธิ</span><span class="font-mono val-green font-bold tabular-nums" id="mixProfit2">฿0</span></div>
+                                <div class="flex items-center justify-between text-xs gap-2"><span class="text-void-400 font-medium">Net Margin</span><span class="font-mono val-green font-bold tabular-nums" id="mixMargin">0%</span></div>
+                                <div class="flex items-center justify-between text-xs gap-2"><span class="text-void-400 font-medium">ROI</span><span class="font-mono val-green font-bold tabular-nums" id="mixROI">0%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SETTINGS -->
+                <div id="tab-settings" class="tab-content hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+                        <div>
+                            <h2 class="font-display text-lg font-bold text-white">ตั้งค่าต้นทุน & สูตรส่วนผสม</h2>
+                            <p class="text-xs text-void-400 mt-1 font-medium">ติ๊กเลือก · เพิ่ม · ลบวัตถุดิบได้อย่างอิสระ · บันทึกอัตโนมัติ</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="saveSettingsBtn" class="btn btn-success inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                <span>บันทึก</span>
+                            </button>
+                            <button id="resetSettingsBtn" class="btn btn-danger inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                                <span>รีเซ็ต</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+
+                        <!-- หลัก -->
+                        <div class="settings-group g-green">
+                            <div class="flex items-center gap-2 mb-5"><span class="dot green"></span><span class="text-sm font-bold text-white">🌿 วัตถุดิบหลัก</span></div>
+                            <div class="space-y-3">
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ใบกระท่อม (บาท / กก.)</label><div class="flex items-baseline gap-1"><span class="text-xs val-green font-bold">฿</span><input id="setPriceLeaf" type="number" step="0.01" min="0" value="100" class="min-input w-full text-base val-green num-highlight"></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ค่าแก๊ส / ไฟ (บาท / ลิตร)</label><div class="flex items-baseline gap-1"><span class="text-xs val-cyan font-bold">฿</span><input id="setGasPerL" type="number" step="0.01" min="0" value="2" class="min-input w-full text-base val-cyan num-highlight"></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ขวดบรรจุ (บาท / ขวด)</label><div class="flex items-baseline gap-1"><span class="text-xs text-void-300 font-bold">฿</span><input id="setPriceBottle" type="number" step="0.01" min="0" value="8" class="min-input w-full text-base text-void-200 num-highlight"></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ต้นทุนแฝง (บาท / ขวด)</label><div class="flex items-baseline gap-1"><span class="text-xs text-void-300 font-bold">฿</span><input id="setHiddenCost" type="number" step="0.01" min="0" value="0" class="min-input w-full text-base text-void-200 num-highlight"></div><p class="text-[10px] text-void-400 mt-1.5">ค่าน้ำ ค่าไฟ ค่าเสื่อม อื่นๆ</p></div>
+                            </div>
+                        </div>
+
+                        <!-- น้ำดิบ Original -->
+                        <div class="settings-group g-cyan">
+                            <div class="flex items-center gap-2 mb-5"><span class="dot cyan"></span><span class="text-sm font-bold text-white">💧 น้ำดิบ Original</span></div>
+                            <div class="space-y-3">
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ราคาขายน้ำดิบ (บาท / ขวด)</label><div class="flex items-baseline gap-1"><span class="text-xs val-cyan font-bold">฿</span><input id="setSellWater" type="number" step="0.01" min="0" value="25" class="min-input w-full text-base val-cyan num-highlight"></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">อัตราส่วนต้ม (น้ำ : ใบ 1 กก.)</label><div class="flex items-baseline gap-1"><input id="setRatio" type="number" step="0.5" min="1" value="22" class="min-input w-full text-base num-highlight"><span class="text-xs text-void-400 font-mono font-semibold">: 1</span></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">% การสกัดคงเหลือ</label><div class="flex items-baseline gap-1"><input id="setExtract" type="number" step="0.5" min="1" max="100" value="80" class="min-input w-full text-base val-amber num-highlight"><span class="text-xs text-void-400 font-mono font-semibold">%</span></div></div>
+                                <div class="input-wrap rounded-xl p-3"><label class="text-[10px] text-void-400 uppercase tracking-widest block mb-2 font-mono font-bold">ขนาดขวดบรรจุ (ml)</label><div class="flex items-baseline gap-1"><input id="setBottleSize" type="number" step="50" min="50" value="1000" class="min-input w-full text-base num-highlight"><span class="text-xs text-void-400 font-mono font-semibold">ml</span></div></div>
+                                <div class="input-wrap rounded-xl p-3" style="border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.02);">
+                                    <label class="text-[10px] uppercase tracking-widest block mb-2 font-mono font-bold" style="color:#fbbf24;">การสูญเสียน้ำตอนผสม (%)</label>
+                                    <div class="flex items-baseline gap-1">
+                                        <input id="setMixLoss" type="number" step="0.5" min="0" max="90" value="10" class="min-input w-full text-base val-amber num-highlight">
+                                        <span class="text-xs text-void-400 font-mono font-semibold">%</span>
+                                    </div>
+                                    <p class="text-[10px] text-void-400 mt-1.5">หักจากปริมาณน้ำรวมอัตโนมัติ → น้ำสุทธิ</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- สูตรฝาแดง -->
+                        <div class="settings-group g-rose">
+                            <div class="flex items-center justify-between mb-5 flex-wrap gap-2">
+                                <div class="flex items-center gap-2"><span class="dot red"></span><span class="text-sm font-bold text-white">🔴 สูตรฝาแดง (Red)</span></div>
+                                <button type="button" data-add-ingredient="red" class="ing-add-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] border border-void-700 bg-void-900 text-void-300 font-semibold">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    <span>เพิ่มวัตถุดิบ</span>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">น้ำดิบฐาน</label><div class="flex items-baseline gap-1"><input id="setRedBaseWater" type="number" step="0.5" min="0.1" value="21" class="min-input w-full text-sm val-cyan num-highlight"><span class="text-[9px] text-void-400 font-mono">L</span></div></div>
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">ปริมาณรวม</label><div class="flex items-baseline gap-1"><input id="setRedFinalVol" type="number" step="0.5" min="0.1" value="25" class="min-input w-full text-sm val-green num-highlight"><span class="text-[9px] text-void-400 font-mono">L</span></div></div>
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">ราคาขาย</label><div class="flex items-baseline gap-1"><span class="text-[10px] val-green font-bold">฿</span><input id="setRedSell" type="number" step="1" min="0" value="35" class="min-input w-full text-sm val-green num-highlight"></div></div>
+                            </div>
+                            <div class="text-[10px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">วัตถุดิบในสูตร (ต่อน้ำดิบฐาน)</div>
+                            <div id="redIngredientsList" class="space-y-2"></div>
+                        </div>
+
+                        <!-- สูตร BM -->
+                        <div class="settings-group g-amber">
+                            <div class="flex items-center justify-between mb-5 flex-wrap gap-2">
+                                <div class="flex items-center gap-2"><span class="dot yellow"></span><span class="text-sm font-bold text-white">🟡 สูตร BM</span><span class="bm-info-badge">อัปเดต</span></div>
+                                <button type="button" data-add-ingredient="bm" class="ing-add-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] border border-void-700 bg-void-900 text-void-300 font-semibold">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    <span>เพิ่มวัตถุดิบ</span>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">น้ำดิบฐาน</label><div class="flex items-baseline gap-1"><input id="setBmBaseWater" type="number" step="0.5" min="0.1" value="21" class="min-input w-full text-sm val-cyan num-highlight"><span class="text-[9px] text-void-400 font-mono">L</span></div></div>
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">ปริมาณรวม</label><div class="flex items-baseline gap-1"><input id="setBmFinalVol" type="number" step="0.5" min="0.1" value="25" class="min-input w-full text-sm val-green num-highlight"><span class="text-[9px] text-void-400 font-mono">L</span></div></div>
+                                <div class="input-wrap rounded-xl p-2.5"><label class="text-[9px] text-void-400 uppercase tracking-widest block mb-1.5 font-mono font-bold">ราคาขาย</label><div class="flex items-baseline gap-1"><span class="text-[10px] val-green font-bold">฿</span><input id="setBmSell" type="number" step="1" min="0" value="35" class="min-input w-full text-sm val-green num-highlight"></div></div>
+                            </div>
+                            <div class="text-[10px] text-void-400 uppercase tracking-widest mb-2 font-mono font-bold">วัตถุดิบในสูตร (ต่อน้ำดิบฐาน)</div>
+                            <div id="bmIngredientsList" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="cost-summary">
+                        <div class="flex items-center gap-2 mb-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="val-green"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            <span class="text-sm font-bold text-white">สรุปต้นทุนปัจจุบัน</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="text-center"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-1.5 font-mono font-bold">น้ำดิบ / ลิตร</div><div class="font-mono text-lg val-cyan font-bold num-highlight" id="sumWaterCost">฿0</div></div>
+                            <div class="text-center"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-1.5 font-mono font-bold">ฝาแดง / ขวด</div><div class="font-mono text-lg val-rose font-bold num-highlight" id="sumRedCost">฿0</div></div>
+                            <div class="text-center"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-1.5 font-mono font-bold">BM / ขวด</div><div class="font-mono text-lg val-amber font-bold num-highlight" id="sumBMCost">฿0</div></div>
+                            <div class="text-center"><div class="text-[10px] text-void-300 uppercase tracking-widest mb-1.5 font-mono font-bold">กำไร / ขวด</div><div class="font-mono text-lg val-green font-bold num-highlight" id="sumProfit">฿0</div></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="border-t border-void-800 mt-12">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-void-400">
+                    <div class="flex items-center gap-2 font-medium">
+                        <span class="text-void-300 font-semibold">S.SAMSEE</span><span>·</span><span>KRATOM</span><span>·</span>
+                        <span class="font-mono" id="appVersion">v4.1.0</span>
+                    </div>
+                    <div class="flex items-center gap-4 font-medium"><span>|| เครื่องคำนวณการผลิตและผสม ||</span></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="installBanner" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[calc(100%-2rem)] p-4 rounded-2xl hidden">
+        <div class="flex items-start gap-3">
+            <div class="logo-mark w-10 h-10 rounded-xl flex items-center justify-center shrink-0"><span class="text-lg">🍃</span></div>
+            <div class="flex-1">
+                <p class="font-display font-bold text-white text-sm">ติดตั้งแอป KRATOM</p>
+                <p class="text-void-300 text-xs mt-0.5">ใช้งานออฟไลน์ได้ · เร็วกว่า · เหมือนแอปจริง</p>
+                <div class="flex gap-2 mt-3">
+                    <button id="installBtn" class="flex-1 px-3 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-colors">ติดตั้งเลย</button>
+                    <button id="dismissInstall" class="px-3 py-1.5 rounded-lg border border-void-700 text-void-300 text-xs hover:bg-void-800 transition-colors">ภายหลัง</button>
+                </div>
+            </div>
+            <button id="closeInstall" class="text-void-500 hover:text-void-300 text-lg leading-none">✕</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-lg font-mono text-xs opacity-0 translate-y-2 transition-all duration-300 pointer-events-none"></div>
+
+<script>
+/* ============================================================
+   PWA SETUP
+   ============================================================ */
+let deferredPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const dismissInstall = document.getElementById('dismissInstall');
+const closeInstall = document.getElementById('closeInstall');
+const installDismissed = localStorage.getItem('pwa_install_dismissed');
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); deferredPrompt = e;
+    if (!installDismissed && !isStandalone) setTimeout(() => installBanner.classList.remove('hidden'), 3000);
+});
+installBtn?.addEventListener('click', async () => {
+    if (!deferredPrompt) { showToast('ไม่สามารถติดตั้งได้ กรุณาใช้เมนูของเบราว์เซอร์', 'error'); return; }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') { showToast('✓ กำลังติดตั้งแอป...'); installBanner.classList.add('hidden'); }
+    deferredPrompt = null;
+});
+dismissInstall?.addEventListener('click', () => { installBanner.classList.add('hidden'); localStorage.setItem('pwa_install_dismissed','true'); });
+closeInstall?.addEventListener('click', () => { installBanner.classList.add('hidden'); localStorage.setItem('pwa_install_dismissed','true'); });
+if (isStandalone) installBanner.classList.add('hidden');
+window.addEventListener('appinstalled', () => { showToast('✓ ติดตั้งแอปสำเร็จ!'); installBanner.classList.add('hidden'); });
+
+/* SERVICE WORKER */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const nw = reg.installing;
+                nw.addEventListener('statechange', () => {
+                    if (nw.state === 'installed' && navigator.serviceWorker.controller) document.getElementById('updateBanner').classList.remove('hidden');
+                });
+            });
+        }).catch(err => console.error('✕ SW failed:', err));
+        document.getElementById('reloadBtn')?.addEventListener('click', () => {
+            navigator.serviceWorker.controller?.postMessage({ type: 'SKIP_WAITING' });
+            window.location.reload();
+        });
+    });
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return; refreshing = true; window.location.reload();
+    });
+}
+
+/* ONLINE/OFFLINE */
+const offlineIndicator = document.getElementById('offlineIndicator');
+function updateOnlineStatus() {
+    if (navigator.onLine) offlineIndicator.classList.add('hidden');
+    else { offlineIndicator.classList.remove('hidden'); showToast('📡 เข้าสู่โหมดออฟไลน์', 'error'); }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+window.addEventListener('load', () => setTimeout(() => document.getElementById('loadingSkeleton').classList.add('hidden'), 300));
+
+/* ============================================================
+   SHARED UTILS
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const fmt = (n, d = 0) => isFinite(n) ? n.toLocaleString('th-TH', { minimumFractionDigits: d, maximumFractionDigits: d }) : '0';
+const round = (n, d = 2) => Math.round(n * Math.pow(10, d)) / Math.pow(10, d);
+const parseNum = (v, fallback = 0) => { const n = parseFloat(v); return isFinite(n) ? n : fallback; };
+const escHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const escAttr = escHtml;
+function fmtIngValue(v, unit) {
+    const countUnits = ['เม็ด','ชิ้น','ขวด','อัน','ฟอง','ลูก'];
+    if (countUnits.includes(unit)) return fmt(Math.round(v), 0);
+    if (v >= 1000) return fmt(v, 0);
+    if (v >= 100) return fmt(v, 1);
+    return fmt(v, 2);
+}
+
+let toastTimer;
+function showToast(msg, type = 'success') {
+    const t = $('toast');
+    t.textContent = msg;
+    if (type === 'success') { t.style.borderColor = 'rgba(16,185,129,0.6)'; t.style.color = '#34d399'; }
+    else if (type === 'error') { t.style.borderColor = 'rgba(239,68,68,0.6)'; t.style.color = '#fca5a5'; }
+    else { t.style.borderColor = '#1f1f24'; t.style.color = '#ffffff'; }
+    t.classList.remove('opacity-0','translate-y-2');
+    t.classList.add('opacity-100','translate-y-0');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.classList.add('opacity-0','translate-y-2'); t.classList.remove('opacity-100','translate-y-0'); }, 2400);
+}
+
+function updateClock() { const c = $('clock'); if (c) c.textContent = new Date().toLocaleTimeString('th-TH', { hour12: false }); }
+setInterval(updateClock, 1000); updateClock();
+
+/* Number Step Buttons */
+document.querySelectorAll('.num-step').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.dataset.stepTarget;
+        const step = parseFloat(btn.dataset.stepValue);
+        const input = $(targetId);
+        if (!input) return;
+        const current = parseNum(input.value, 0);
+        const next = Math.max(0, current + step);
+        const decimals = (btn.dataset.stepValue.split('.')[1] || '').length;
+        const rounded = decimals > 0 ? +next.toFixed(decimals) : Math.round(next);
+        input.value = rounded;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+});
+
+function updateSliderFill(slider) {
+    const min = parseFloat(slider.min), max = parseFloat(slider.max), val = parseFloat(slider.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    slider.style.setProperty('--pct', pct + '%');
+}
+
+/* TAB SWITCHING */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        $('tab-' + btn.dataset.tab).classList.remove('hidden');
+        if (btn.dataset.tab === 'settings') updateSettingsSummary();
+    });
+});
+
+/* COLLAPSE */
+document.querySelectorAll('.collapse-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const body = $(btn.dataset.collapse);
+        const label = btn.querySelector('.collapse-label');
+        const isHidden = body.classList.contains('hidden-state');
+        if (isHidden) {
+            body.classList.remove('hidden-state');
+            body.style.maxHeight = body.scrollHeight + 'px';
+            btn.classList.remove('collapsed');
+            label.textContent = 'ซ่อน';
+        } else {
+            body.style.maxHeight = body.scrollHeight + 'px';
+            requestAnimationFrame(() => body.classList.add('hidden-state'));
+            btn.classList.add('collapsed');
+            label.textContent = 'แสดง';
+        }
+    });
+});
+
+/* ============================================================
+   SETTINGS - v4.1 (Dynamic ingredients + Water loss)
+   ============================================================ */
+const COLOR_PALETTE = ['#fb7185','#f472b6','#a78bfa','#818cf8','#38bdf8','#22d3ee','#2dd4bf','#34d399','#a3e635','#fbbf24','#fb923c','#f87171','#e879f9','#facc15'];
+
+const DEFAULT_RED_INGREDIENTS = [
+    { id: 'red_coke',    name: 'โค้กฝาแดง',     unit: 'L',  enabled: true, qty: 7,   price: 15, pricePer: 1,  color: '#fb7185' },
+    { id: 'red_med',     name: 'ยาแก้ไอฝาแดง',  unit: 'ml', enabled: true, qty: 140, price: 12, pricePer: 60, color: '#f472b6' },
+    { id: 'red_plum88',  name: 'ผงบ๊วย 88',     unit: 'ml', enabled: true, qty: 75,  price: 1,  pricePer: 1,  color: '#fbbf24' },
+    { id: 'red_sweet',   name: 'ผงหวาน',       unit: 'g',  enabled: true, qty: 5,   price: 1,  pricePer: 1,  color: '#a3e635' }
+];
+
+const DEFAULT_BM_INGREDIENTS = [
+    { id: 'bm_coke',    name: 'โค้ก BM',       unit: 'L',   enabled: true, qty: 7,   price: 15,  pricePer: 1,  color: '#fb7185' },
+    { id: 'bm_plum',    name: 'บ๊วย (เม็ด)',    unit: 'เม็ด', enabled: true, qty: 63,  price: 0.5, pricePer: 1,  color: '#a78bfa' },
+    { id: 'bm_med',     name: 'ยาแก้ไอ BM',    unit: 'ml',  enabled: true, qty: 140, price: 12,  pricePer: 60, color: '#f472b6' },
+    { id: 'bm_plum88',  name: 'ผงบ๊วย 88',     unit: 'ml',  enabled: true, qty: 75,  price: 1,   pricePer: 1,  color: '#fbbf24' },
+    { id: 'bm_sweet',   name: 'ผงหวาน',       unit: 'g',   enabled: true, qty: 5,   price: 1,   pricePer: 1,  color: '#a3e635' },
+    { id: 'bm_salted',  name: 'ผงบ๊วยเค็ม',    unit: 'ml',  enabled: true, qty: 20,  price: 1,   pricePer: 1,  color: '#fb923c' }
+];
+
+const DEFAULTS = {
+    priceLeaf: 100, gasPerL: 2, priceBottle: 8, hiddenCost: 0,
+    sellWater: 25, ratio: 22, extract: 80, bottleSize: 1000,
+    mixLossPct: 10,
+    redBaseWater: 21, redFinalVol: 25, redSellPrice: 35,
+    redIngredients: JSON.parse(JSON.stringify(DEFAULT_RED_INGREDIENTS)),
+    bmBaseWater: 21, bmFinalVol: 25, bmSellPrice: 35,
+    bmIngredients: JSON.parse(JSON.stringify(DEFAULT_BM_INGREDIENTS))
+};
+
+function loadSettings() {
+    try {
+        const saved = localStorage.getItem('kratom_settings_v4');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            const merged = { ...DEFAULTS, ...parsed };
+            if (!Array.isArray(merged.redIngredients) || !merged.redIngredients.length) merged.redIngredients = JSON.parse(JSON.stringify(DEFAULT_RED_INGREDIENTS));
+            if (!Array.isArray(merged.bmIngredients) || !merged.bmIngredients.length) merged.bmIngredients = JSON.parse(JSON.stringify(DEFAULT_BM_INGREDIENTS));
+            if (typeof merged.mixLossPct !== 'number' || !isFinite(merged.mixLossPct)) merged.mixLossPct = 10;
+            return merged;
+        }
+    } catch (e) { console.warn('Settings load error', e); }
+    return JSON.parse(JSON.stringify(DEFAULTS));
+}
+
+let SETTINGS = loadSettings();
+
+function saveSettings() {
+    try {
+        localStorage.setItem('kratom_settings_v4', JSON.stringify(SETTINGS));
+        showToast('✓ บันทึกการตั้งค่าเรียบร้อย');
+    } catch (e) {
+        showToast('✕ ไม่สามารถบันทึกได้', 'error');
+    }
+}
+
+/* Helpers */
+function getIngredients(fk) { return fk === 'red' ? SETTINGS.redIngredients : SETTINGS.bmIngredients; }
+function getBaseWater(fk)   { return SETTINGS[fk + 'BaseWater'] || 21; }
+function getFinalVol(fk)    { return SETTINGS[fk + 'FinalVol'] || 25; }
+function getSellPrice(fk)   { return SETTINGS[fk + 'SellPrice'] || 35; }
+function findIng(fk, id)    { return getIngredients(fk).find(i => i.id === id); }
+function getNetFactor()     { const p = Math.max(0, Math.min(90, Number(SETTINGS.mixLossPct) || 0)); return (100 - p) / 100; }
+function pickNextColor(ings) {
+    const used = new Set(ings.map(i => i.color));
+    for (const c of COLOR_PALETTE) if (!used.has(c)) return c;
+    return COLOR_PALETTE[ings.length % COLOR_PALETTE.length];
+}
+function hexA(hex, a) {
+    const h = hex.replace('#','');
+    const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+    return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ============================================================
+   TAB 1: BOILING
+   ============================================================ */
+const boilState = {
+    leaves: 3, water: 66, yieldL: 52.8,
+    ratio: SETTINGS.ratio, extract: SETTINGS.extract,
+    pricePerKg: SETTINGS.priceLeaf, gasPerL: SETTINGS.gasPerL,
+    bottleCost: SETTINGS.priceBottle, hiddenCost: SETTINGS.hiddenCost,
+    lastEdited: 'leaves'
+};
+let boilCostPerL = 7.68;
+
+const boilDom = {
+    inputLeaves: $('inputLeaves'), inputWater: $('inputWater'), inputYield: $('inputYield'),
+    ratioSlider: $('ratioSlider'), extractSlider: $('extractSlider'),
+    pricePerKg: $('pricePerKg'), gasPerL: $('gasPerL'),
+    bottleCostBoil: $('bottleCostBoil'), hiddenCostBoil: $('hiddenCostBoil'),
+    cardLeaves: $('card-leaves'), cardWater: $('card-water'), cardYield: $('card-yield'),
+    ratioLabel: $('ratioLabel'), ratioValue: $('ratioValue'),
+    extractLabel: $('extractLabel'), extractValue: $('extractValue'),
+    costLeaves: $('costLeaves'), yieldBadge: $('yieldBadge'),
+    leafQtyBoil: $('leafQtyBoil'), leafPriceBoil: $('leafPriceBoil'),
+    waterQtyBoil: $('waterQtyBoil'), gasPriceBoil: $('gasPriceBoil'),
+    bottleCountBoil: $('bottleCountBoil'), bottlePriceBoil: $('bottlePriceBoil'),
+    hiddenBottleQty: $('hiddenBottleQty'), hiddenPriceBoil: $('hiddenPriceBoil'),
+    breakLeaf: $('breakLeaf'), breakGas: $('breakGas'),
+    breakBottle: $('breakBottle'), breakHidden: $('breakHidden'),
+    costLeafBoil: $('costLeafBoil'), costGasBoil: $('costGasBoil'),
+    costBottleBoil: $('costBottleBoil'), totalCostBoil: $('totalCostBoil'),
+    totalCost2: $('totalCost2'),
+    costPerL2: $('costPerL2'), costPerBottleBoil: $('costPerBottleBoil'),
+    resetBtn: $('resetBoilBtn')
+};
+
+function calculateBoil() {
+    const { leaves, ratio, extract, pricePerKg, gasPerL, bottleCost, hiddenCost } = boilState;
+    boilState.water = +(leaves * ratio).toFixed(2);
+    boilState.yieldL = +(boilState.water * (extract / 100)).toFixed(2);
+    const costLeaves = leaves * pricePerKg;
+    const costGas = boilState.water * gasPerL;
+    const bottleSize = (SETTINGS.bottleSize || 1000) / 1000;
+    const bottlesNeeded = Math.floor(boilState.yieldL / bottleSize);
+    const costBottles = bottlesNeeded * bottleCost;
+    const costHidden = bottlesNeeded * hiddenCost;
+    const totalCost = costLeaves + costGas + costBottles + costHidden;
+    const costPerL = boilState.yieldL > 0 ? totalCost / boilState.yieldL : 0;
+    const costPerBottle = bottlesNeeded > 0 ? totalCost / bottlesNeeded : 0;
+    renderBoil({ costLeaves, costGas, costBottles, costHidden, totalCost, costPerL, costPerBottle, bottlesNeeded });
+}
+
+function renderBoil(r) {
+    boilDom.inputLeaves.value = round(boilState.leaves, 2);
+    boilDom.inputWater.value = round(boilState.water, 2);
+    boilDom.inputYield.value = round(boilState.yieldL, 2);
+    boilDom.ratioSlider.value = boilState.ratio;
+    boilDom.extractSlider.value = boilState.extract;
+    updateSliderFill(boilDom.ratioSlider);
+    updateSliderFill(boilDom.extractSlider);
+    boilDom.ratioLabel.textContent = `${round(boilState.ratio, 1)}:1`;
+    boilDom.ratioValue.textContent = `${round(boilState.ratio, 1)} : 1`;
+    boilDom.extractLabel.textContent = `${round(boilState.extract, 1)}%`;
+    boilDom.extractValue.textContent = `${round(boilState.extract, 1)}%`;
+
+    [boilDom.cardLeaves, boilDom.cardWater, boilDom.cardYield].forEach(c => c.classList.remove('active','active-green','active-cyan','active-amber'));
+    const map = { leaves: [boilDom.cardLeaves,'active-green'], water: [boilDom.cardWater,'active-cyan'], yield: [boilDom.cardYield,'active-amber'] };
+    const [card, cls] = map[boilState.lastEdited] || map.leaves;
+    card.classList.add('active', cls);
+
+    boilDom.costLeaves.textContent = `฿${fmt(r.costLeaves, 2)}`;
+    boilDom.yieldBadge.textContent = fmt(boilState.yieldL, 2);
+    boilDom.costLeafBoil.textContent = `฿${fmt(r.costLeaves, 2)}`;
+    boilDom.costGasBoil.textContent = `฿${fmt(r.costGas, 2)}`;
+    boilDom.costBottleBoil.textContent = `฿${fmt(r.costBottles + r.costHidden, 2)}`;
+    boilDom.totalCostBoil.textContent = `฿${fmt(r.totalCost, 2)}`;
+    boilDom.leafQtyBoil.textContent = fmt(boilState.leaves, 2);
+    boilDom.leafPriceBoil.textContent = fmt(boilState.pricePerKg, 2);
+    boilDom.waterQtyBoil.textContent = fmt(boilState.water, 2);
+    boilDom.gasPriceBoil.textContent = fmt(boilState.gasPerL, 2);
+    boilDom.bottleCountBoil.textContent = fmt(r.bottlesNeeded);
+    boilDom.bottlePriceBoil.textContent = fmt(boilState.bottleCost, 2);
+    boilDom.hiddenBottleQty.textContent = fmt(r.bottlesNeeded);
+    boilDom.hiddenPriceBoil.textContent = fmt(boilState.hiddenCost, 2);
+    boilDom.breakLeaf.textContent = `฿${fmt(r.costLeaves, 2)}`;
+    boilDom.breakGas.textContent = `฿${fmt(r.costGas, 2)}`;
+    boilDom.breakBottle.textContent = `฿${fmt(r.costBottles, 2)}`;
+    boilDom.breakHidden.textContent = `฿${fmt(r.costHidden, 2)}`;
+    boilDom.totalCost2.textContent = `฿${fmt(r.totalCost, 2)}`;
+    boilDom.costPerL2.textContent = `฿${fmt(r.costPerL, 2)}`;
+    boilDom.costPerBottleBoil.textContent = `฿${fmt(r.costPerBottle, 2)}`;
+
+    boilCostPerL = r.costPerL;
+    calculateMix();
+}
+
+function handleLeaves(v) { boilState.leaves = Math.max(0, parseNum(v)); boilState.lastEdited = 'leaves'; calculateBoil(); }
+function handleWater(v) {
+    boilState.water = Math.max(0, parseNum(v));
+    if (boilState.ratio > 0) boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2);
+    boilState.lastEdited = 'water'; calculateBoil();
+}
+function handleYield(v) {
+    boilState.yieldL = Math.max(0, parseNum(v));
+    if (boilState.extract > 0) boilState.water = +(boilState.yieldL / (boilState.extract / 100)).toFixed(2);
+    if (boilState.ratio > 0) boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2);
+    boilState.lastEdited = 'yield'; calculateBoil();
+}
+function handleRatio(v) {
+    boilState.ratio = parseNum(v, SETTINGS.ratio) || SETTINGS.ratio;
+    if (boilState.lastEdited === 'leaves') boilState.water = +(boilState.leaves * boilState.ratio).toFixed(2);
+    else if (boilState.lastEdited === 'water') boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2);
+    else { if (boilState.extract > 0) boilState.water = +(boilState.yieldL / (boilState.extract / 100)).toFixed(2); boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2); }
+    calculateBoil();
+}
+function handleExtract(v) {
+    boilState.extract = parseNum(v, SETTINGS.extract) || SETTINGS.extract;
+    if (boilState.lastEdited === 'leaves') { boilState.water = +(boilState.leaves * boilState.ratio).toFixed(2); boilState.yieldL = +(boilState.water * (boilState.extract / 100)).toFixed(2); }
+    else if (boilState.lastEdited === 'water') { boilState.yieldL = +(boilState.water * (boilState.extract / 100)).toFixed(2); }
+    else { if (boilState.extract > 0) boilState.water = +(boilState.yieldL / (boilState.extract / 100)).toFixed(2); boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2); }
+    calculateBoil();
+}
+
+boilDom.inputLeaves.addEventListener('input', e => { handleLeaves(e.target.value); updateQuickBoilActive(); });
+boilDom.inputWater.addEventListener('input', e => { handleWater(e.target.value); updateQuickBoilActive(); });
+boilDom.inputYield.addEventListener('input', e => { handleYield(e.target.value); updateQuickYieldActive(); });
+boilDom.ratioSlider.addEventListener('input', e => handleRatio(e.target.value));
+boilDom.extractSlider.addEventListener('input', e => { handleExtract(e.target.value); updateQuickYieldActive(); });
+boilDom.pricePerKg.addEventListener('input', e => { boilState.pricePerKg = Math.max(0, parseNum(e.target.value)); calculateBoil(); });
+boilDom.gasPerL.addEventListener('input', e => { boilState.gasPerL = Math.max(0, parseNum(e.target.value)); calculateBoil(); });
+boilDom.bottleCostBoil.addEventListener('input', e => { boilState.bottleCost = Math.max(0, parseNum(e.target.value)); calculateBoil(); });
+boilDom.hiddenCostBoil.addEventListener('input', e => { boilState.hiddenCost = Math.max(0, parseNum(e.target.value)); calculateBoil(); });
+
+boilDom.resetBtn.addEventListener('click', () => {
+    boilState.leaves = 3;
+    boilState.ratio = SETTINGS.ratio;
+    boilState.extract = SETTINGS.extract;
+    boilState.pricePerKg = SETTINGS.priceLeaf;
+    boilState.gasPerL = SETTINGS.gasPerL;
+    boilState.bottleCost = SETTINGS.priceBottle;
+    boilState.hiddenCost = SETTINGS.hiddenCost;
+    boilState.lastEdited = 'leaves';
+    boilDom.pricePerKg.value = SETTINGS.priceLeaf;
+    boilDom.gasPerL.value = SETTINGS.gasPerL;
+    boilDom.bottleCostBoil.value = SETTINGS.priceBottle;
+    boilDom.hiddenCostBoil.value = SETTINGS.hiddenCost;
+    calculateBoil();
+    updateQuickBoilActive();
+    updateQuickYieldActive();
+    showToast('✓ รีเซ็ตค่าน้ำดิบเรียบร้อย');
+});
+
+function updateQuickBoilActive() {
+    document.querySelectorAll('[data-quick-boil]').forEach(btn => {
+        Math.abs(parseFloat(btn.dataset.quickBoil) - boilState.leaves) < 0.01 ? btn.classList.add('active') : btn.classList.remove('active');
+    });
+    document.querySelectorAll('[data-quick-water]').forEach(btn => {
+        Math.abs(parseFloat(btn.dataset.quickWater) - boilState.water) < 0.5 ? btn.classList.add('active') : btn.classList.remove('active');
+    });
+}
+function updateQuickYieldActive() {
+    document.querySelectorAll('[data-quick-yield]').forEach(btn => {
+        Math.abs(parseFloat(btn.dataset.quickYield) * 100 - boilState.extract) < 0.5 ? btn.classList.add('active') : btn.classList.remove('active');
+    });
+}
+
+document.querySelectorAll('[data-quick-boil]').forEach(btn => btn.addEventListener('click', () => {
+    const v = parseFloat(btn.dataset.quickBoil); boilState.leaves = v; boilState.lastEdited = 'leaves';
+    calculateBoil(); updateQuickBoilActive(); showToast(`⚡ ตั้งใบกระท่อม ${v} kg`);
+}));
+document.querySelectorAll('[data-quick-water]').forEach(btn => btn.addEventListener('click', () => {
+    const v = parseFloat(btn.dataset.quickWater); boilState.water = v;
+    if (boilState.ratio > 0) boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2);
+    boilState.lastEdited = 'water'; calculateBoil(); updateQuickBoilActive(); showToast(`⚡ ตั้งน้ำเปล่า ${v} ลิตร`);
+}));
+document.querySelectorAll('[data-quick-yield]').forEach(btn => btn.addEventListener('click', () => {
+    const pct = parseFloat(btn.dataset.quickYield) * 100; boilState.extract = pct;
+    if (boilState.lastEdited === 'leaves') { boilState.water = +(boilState.leaves * boilState.ratio).toFixed(2); boilState.yieldL = +(boilState.water * (pct/100)).toFixed(2); }
+    else if (boilState.lastEdited === 'water') { boilState.yieldL = +(boilState.water * (pct/100)).toFixed(2); }
+    else { if (pct > 0) boilState.water = +(boilState.yieldL / (pct/100)).toFixed(2); boilState.leaves = +(boilState.water / boilState.ratio).toFixed(2); }
+    calculateBoil(); updateQuickYieldActive(); showToast(`⚡ ตั้ง % สกัด ${pct}%`);
+}));
+
+/* ============================================================
+   TAB 2: MIXING - Dynamic with Water Loss
+   ============================================================ */
+const mixState = { mode: 'forward', preset: 'red', waterL: 30, bottles: 40 };
+
+const mixDom = {
+    modeForward: $('modeForward'), modeReverse: $('modeReverse'),
+    forwardInputs: $('forwardInputs'), reverseInputs: $('reverseInputs'),
+    inputWater: $('mixInputWater'), inputBottles: $('mixInputBottles'),
+    mixIngredients: $('mixIngredients'), mixCostRows: $('mixCostRows'),
+    resTotalVol: $('resTotalVol'), resBottles: $('resBottles'), resBottleSize: $('resBottleSize'),
+    mixFormulaTag: $('mixFormulaTag'), mixBottlesBadge: $('mixBottlesBadge'),
+    bmFormulaBadge: $('bmFormulaBadge'),
+    presetRedDesc: $('presetRedDesc'), presetBMDesc: $('presetBMDesc'),
+    mixTotalCost: $('mixTotalCost'), mixTotalCost2: $('mixTotalCost2'),
+    mixCostPerBottle: $('mixCostPerBottle'), mixCostPerBottle2: $('mixCostPerBottle2'),
+    mixRevenue: $('mixRevenue'), mixRevenue2: $('mixRevenue2'),
+    mixProfit: $('mixProfit'), mixProfit2: $('mixProfit2'),
+    mixMargin: $('mixMargin'), mixROI: $('mixROI'),
+    mixNetWaterForward: $('mixNetWaterForward'),
+    mixTotalWaterReverse: $('mixTotalWaterReverse'),
+    mixLossForwardLabel: $('mixLossForwardLabel'),
+    resetBtn: $('resetMixBtn')
+};
+
+mixDom.modeForward.addEventListener('click', () => {
+    mixState.mode = 'forward';
+    mixDom.modeForward.classList.add('bg-void-750','text-white'); mixDom.modeForward.classList.remove('text-void-300');
+    mixDom.modeReverse.classList.remove('bg-void-750','text-white'); mixDom.modeReverse.classList.add('text-void-300');
+    mixDom.forwardInputs.classList.remove('hidden'); mixDom.reverseInputs.classList.add('hidden');
+    calculateMix(); updateQuickMixActive();
+});
+mixDom.modeReverse.addEventListener('click', () => {
+    mixState.mode = 'reverse';
+    mixDom.modeReverse.classList.add('bg-void-750','text-white'); mixDom.modeReverse.classList.remove('text-void-300');
+    mixDom.modeForward.classList.remove('bg-void-750','text-white'); mixDom.modeForward.classList.add('text-void-300');
+    mixDom.reverseInputs.classList.remove('hidden'); mixDom.forwardInputs.classList.add('hidden');
+    calculateMix(); updateQuickMixActive();
+});
+
+document.querySelectorAll('[data-preset]').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active-red','active-yellow'));
+    const key = btn.dataset.preset;
+    btn.classList.add(key === 'red' ? 'active-red' : 'active-yellow');
+    applyPreset(key);
+}));
+
+function applyPreset(key) {
+    mixState.preset = key;
+    if (key === 'red') {
+        mixDom.bmFormulaBadge.classList.add('hidden');
+        mixDom.mixFormulaTag.textContent = 'สูตรฝาแดง';
+        mixDom.mixFormulaTag.style.color = '#fca5a5';
+        mixDom.mixFormulaTag.style.borderColor = 'rgba(239,68,68,0.35)';
+        mixDom.mixFormulaTag.style.background = 'rgba(239,68,68,0.06)';
+    } else {
+        mixDom.bmFormulaBadge.classList.remove('hidden');
+        mixDom.mixFormulaTag.textContent = 'สูตร BM';
+        mixDom.mixFormulaTag.style.color = '#fbbf24';
+        mixDom.mixFormulaTag.style.borderColor = 'rgba(245,158,11,0.35)';
+        mixDom.mixFormulaTag.style.background = 'rgba(245,158,11,0.06)';
+    }
+    updatePresetDescriptions();
+    calculateMix();
+}
+
+function updatePresetDescriptions() {
+    const red = getIngredients('red').filter(i => i.enabled);
+    const bm  = getIngredients('bm').filter(i => i.enabled);
+    const fmtShort = (ing) => `${ing.qty}${ing.unit} ${ing.name}`;
+    mixDom.presetRedDesc.textContent = `น้ำ ${getBaseWater('red')}L + ` + red.slice(0,4).map(fmtShort).join(' + ') + (red.length > 4 ? ` +${red.length-4}` : '');
+    mixDom.presetBMDesc.textContent  = `น้ำ ${getBaseWater('bm')}L + ` + bm.slice(0,4).map(fmtShort).join(' + ') + (bm.length > 4 ? ` +${bm.length-4}` : '');
+}
+
+mixDom.inputWater.addEventListener('input', e => { mixState.waterL = Math.max(0, parseNum(e.target.value)); calculateMix(); updateQuickMixActive(); });
+mixDom.inputBottles.addEventListener('input', e => { mixState.bottles = Math.max(0, Math.floor(parseNum(e.target.value))); calculateMix(); updateQuickMixActive(); });
+
+mixDom.resetBtn.addEventListener('click', () => {
+    mixState.mode = 'forward'; mixState.waterL = 30; mixState.bottles = 40;
+    mixDom.inputWater.value = 30; mixDom.inputBottles.value = 40;
+    mixDom.modeForward.click();
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active-red','active-yellow'));
+    document.querySelector('[data-preset="red"]').classList.add('active-red');
+    applyPreset('red');
+    showToast('✓ รีเซ็ตค่าน้ำผสมเรียบร้อย');
+});
+
+/**
+ * Core mix calculation with water-loss adjustment.
+ * 
+ * Flow:
+ *   1. User specifies either total water input (forward) or target bottles (reverse)
+ *   2. Water loss % is subtracted → net water
+ *   3. Net water × finalVolFactor = final product volume
+ *   4. Ingredients scaled to TOTAL water input (preserves concentration)
+ *   5. Bottles = final volume / bottle size
+ */
+function calculateMix() {
+    const fk = mixState.preset;
+    const ings = getIngredients(fk).filter(i => i.enabled);
+    const base = getBaseWater(fk);
+    const finalVol = getFinalVol(fk);
+    const finalFactor = finalVol / base;
+    const bottleSize = SETTINGS.bottleSize || 1000;
+
+    const lossPct = Math.max(0, Math.min(90, Number(SETTINGS.mixLossPct) || 0));
+    const netFactor = (100 - lossPct) / 100;
+
+    let waterTotalL, waterNetL, bottles, finalVolL;
+    if (mixState.mode === 'forward') {
+        waterTotalL = mixState.waterL;
+        waterNetL = waterTotalL * netFactor;
+        finalVolL = waterNetL * finalFactor;
+        bottles = Math.floor((finalVolL * 1000) / bottleSize);
+    } else {
+        bottles = mixState.bottles;
+        finalVolL = (bottles * bottleSize) / 1000;
+        waterNetL = finalVolL / finalFactor;
+        waterTotalL = netFactor > 0 ? waterNetL / netFactor : waterNetL;
+    }
+
+    // Water cost based on TOTAL water used (boiled water cost)
+    const waterCost = waterTotalL * boilCostPerL;
+    const results = [{
+        id: fk + '_water', name: 'น้ำดิบ', unit: 'L',
+        value: waterTotalL, netValue: waterNetL,
+        cost: waterCost, color: '#22d3ee', isWater: true
+    }];
+
+    // Ingredients scaled to TOTAL water input
+    ings.forEach(ing => {
+        const value = waterTotalL * (ing.qty / base);
+        const pricePer = ing.pricePer || 1;
+        let finalValue = value;
+        if (['เม็ด','ชิ้น','ขวด','อัน'].includes(ing.unit)) finalValue = Math.round(value);
+        const cost = finalValue * (ing.price / pricePer);
+        results.push({ ...ing, value: finalValue, cost });
+    });
+
+    const costBottle = bottles * SETTINGS.priceBottle;
+    const costHidden = bottles * SETTINGS.hiddenCost;
+    const totalCost = results.reduce((s,r) => s + r.cost, 0) + costBottle + costHidden;
+    const costPerBottle = bottles > 0 ? totalCost / bottles : 0;
+    const sellPrice = getSellPrice(fk);
+    const revenue = bottles * sellPrice;
+    const profit = revenue - totalCost;
+    const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+    const roi = totalCost > 0 ? (profit / totalCost) * 100 : 0;
+
+    renderMixDynamic(fk, {
+        results, bottles, bottleSize, finalVolL,
+        waterTotalL, waterNetL, lossPct,
+        costBottle, costHidden, totalCost, costPerBottle,
+        revenue, profit, margin, roi
+    });
+}
+
+function renderMixDynamic(fk, r) {
+    // Ingredient cards
+    const cards = r.results.map(ing => `
+        <div class="result-item" style="background: linear-gradient(180deg, ${hexA(ing.color, 0.05)}, #08080a 45%);">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg, transparent, ${ing.color}, transparent);"></div>
+            <div class="text-[10px] uppercase tracking-widest mb-2 font-mono font-bold" style="color:${ing.color}">${escHtml(ing.name)}</div>
+            <div class="flex items-baseline gap-1">
+                <span class="font-mono text-2xl font-bold num-highlight" style="color:${ing.color}">${fmtIngValue(ing.value, ing.unit)}</span>
+                <span class="text-xs text-void-400 font-mono font-semibold">${escHtml(ing.unit)}</span>
+            </div>
+        </div>
+    `).join('');
+    mixDom.mixIngredients.innerHTML = cards;
+
+    // Summary
+    mixDom.resTotalVol.textContent = `${fmt(r.finalVolL, 2)} L`;
+    mixDom.resBottles.textContent = fmt(r.bottles);
+    mixDom.resBottleSize.textContent = `${fmt(r.bottleSize)} ml`;
+    mixDom.mixBottlesBadge.textContent = fmt(r.bottles);
+
+    // Water info displays
+    if (mixDom.mixNetWaterForward)   mixDom.mixNetWaterForward.textContent = fmt(r.waterNetL, 2);
+    if (mixDom.mixTotalWaterReverse) mixDom.mixTotalWaterReverse.textContent = fmt(r.waterTotalL, 2);
+    if (mixDom.mixLossForwardLabel)  mixDom.mixLossForwardLabel.textContent = fmt(r.lossPct, 0);
+
+    // Cost rows
+    const circles = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮'];
+    let idx = 0;
+    let rows = r.results.map(ing => {
+        const pricePer = ing.isWater ? 1 : (ing.pricePer || 1);
+        const unitPrice = ing.isWater ? boilCostPerL : (ing.price / pricePer);
+        const priceNote = (!ing.isWater && ing.pricePer && ing.pricePer !== 1) ? `/${ing.pricePer}${ing.unit}` : '';
+        const noteText = ing.isWater
+            ? `(${fmtIngValue(ing.value, 'L')} L × ฿${fmt(unitPrice, 2)})`
+            : `(${fmtIngValue(ing.value, ing.unit)} ${escHtml(ing.unit)} × ฿${fmt(unitPrice, 2)}${priceNote})`;
+        return `
+            <div class="flex items-center justify-between gap-2">
+                <span class="text-void-300 font-medium">${circles[idx++]} ${escHtml(ing.name)} <span class="text-void-400 font-mono">${noteText}</span></span>
+                <span class="font-mono font-bold tabular-nums shrink-0" style="color:${ing.color}">฿${fmt(ing.cost, 2)}</span>
+            </div>`;
+    }).join('');
+
+    rows += `
+        <div class="flex items-center justify-between gap-2">
+            <span class="text-void-300 font-medium">${circles[idx++]} ขวด + ฝา + ฉลาก <span class="text-void-400 font-mono">(${fmt(r.bottles)} × ฿${fmt(SETTINGS.priceBottle, 2)})</span></span>
+            <span class="font-mono text-void-200 font-bold tabular-nums shrink-0">฿${fmt(r.costBottle, 2)}</span>
+        </div>`;
+    if (SETTINGS.hiddenCost > 0) {
+        rows += `
+        <div class="flex items-center justify-between gap-2">
+            <span class="text-void-300 font-medium">${circles[idx++]} ต้นทุนแฝง <span class="text-void-400 font-mono">(${fmt(r.bottles)} × ฿${fmt(SETTINGS.hiddenCost, 2)})</span></span>
+            <span class="font-mono text-void-200 font-bold tabular-nums shrink-0">฿${fmt(r.costHidden, 2)}</span>
+        </div>`;
+    }
+    mixDom.mixCostRows.innerHTML = rows;
+
+    // Totals
+    mixDom.mixTotalCost.textContent = `฿${fmt(r.totalCost, 2)}`;
+    mixDom.mixCostPerBottle.textContent = `฿${fmt(r.costPerBottle, 2)}`;
+    mixDom.mixRevenue.textContent = `฿${fmt(r.revenue, 2)}`;
+    mixDom.mixProfit.textContent = `฿${fmt(r.profit, 2)}`;
+    mixDom.mixTotalCost2.textContent = `฿${fmt(r.totalCost, 2)}`;
+    mixDom.mixCostPerBottle2.textContent = `฿${fmt(r.costPerBottle, 2)}`;
+    mixDom.mixRevenue2.textContent = `฿${fmt(r.revenue, 2)}`;
+    mixDom.mixProfit2.textContent = `฿${fmt(r.profit, 2)}`;
+    mixDom.mixMargin.textContent = `${fmt(r.margin, 1)}%`;
+    mixDom.mixROI.textContent = `${r.roi >= 0 ? '+' : ''}${fmt(r.roi, 1)}%`;
+
+    // Sync state <-> inputs (bidirectional)
+    if (mixState.mode === 'reverse') {
+        mixState.waterL = r.waterTotalL;
+        mixDom.inputWater.value = round(r.waterTotalL, 2);
+    } else {
+        mixState.bottles = r.bottles;
+        mixDom.inputBottles.value = r.bottles;
+    }
+}
+
+function updateQuickMixActive() {
+    document.querySelectorAll('[data-quick-mixwater]').forEach(btn => {
+        Math.abs(parseFloat(btn.dataset.quickMixwater) - mixState.waterL) < 0.5 && mixState.mode === 'forward' ? btn.classList.add('active') : btn.classList.remove('active');
+    });
+    document.querySelectorAll('[data-quick-mixbottle]').forEach(btn => {
+        Math.abs(parseFloat(btn.dataset.quickMixbottle) - mixState.bottles) < 0.5 && mixState.mode === 'reverse' ? btn.classList.add('active') : btn.classList.remove('active');
+    });
+}
+
+document.querySelectorAll('[data-quick-mixwater]').forEach(btn => btn.addEventListener('click', () => {
+    if (mixState.mode !== 'forward') mixDom.modeForward.click();
+    const v = parseFloat(btn.dataset.quickMixwater);
+    mixState.waterL = v; mixDom.inputWater.value = v;
+    calculateMix(); updateQuickMixActive(); showToast(`⚡ ตั้งน้ำดิบผสม ${v} ลิตร (รวม)`);
+}));
+document.querySelectorAll('[data-quick-mixbottle]').forEach(btn => btn.addEventListener('click', () => {
+    if (mixState.mode !== 'reverse') mixDom.modeReverse.click();
+    const v = parseFloat(btn.dataset.quickMixbottle);
+    mixState.bottles = v; mixDom.inputBottles.value = v;
+    calculateMix(); updateQuickMixActive(); showToast(`⚡ ตั้งเป้า ${v} ขวด`);
+}));
+
+/* ============================================================
+   TAB 3: SETTINGS - Dynamic ingredient editor
+   ============================================================ */
+const settingsDom = {
+    priceLeaf: $('setPriceLeaf'), gasPerL: $('setGasPerL'),
+    priceBottle: $('setPriceBottle'), hiddenCost: $('setHiddenCost'),
+    sellWater: $('setSellWater'), ratio: $('setRatio'),
+    extract: $('setExtract'), bottleSize: $('setBottleSize'),
+    mixLoss: $('setMixLoss'),
+    redBaseWater: $('setRedBaseWater'), redFinalVol: $('setRedFinalVol'), redSell: $('setRedSell'),
+    bmBaseWater: $('setBmBaseWater'), bmFinalVol: $('setBmFinalVol'), bmSell: $('setBmSell'),
+    redIngredientsList: $('redIngredientsList'), bmIngredientsList: $('bmIngredientsList'),
+    saveBtn: $('saveSettingsBtn'), resetBtn: $('resetSettingsBtn'),
+    sumWaterCost: $('sumWaterCost'), sumRedCost: $('sumRedCost'),
+    sumBMCost: $('sumBMCost'), sumProfit: $('sumProfit')
+};
+
+function renderIngredientSettings(fk) {
+    const container = fk === 'red' ? settingsDom.redIngredientsList : settingsDom.bmIngredientsList;
+    if (!container) return;
+    const ings = getIngredients(fk);
+
+    if (!ings.length) {
+        container.innerHTML = `<div class="text-center text-void-500 text-xs py-4 font-mono">— ยังไม่มีวัตถุดิบ กด "เพิ่มวัตถุดิบ" —</div>`;
+        return;
+    }
+
+    container.innerHTML = ings.map(ing => {
+        const c = ing.color || '#22d3ee';
+        return `
+        <div class="ing-row flex items-center gap-2 p-2 rounded-lg bg-void-900 border border-void-800" data-ing-id="${ing.id}" data-formula="${fk}">
+            <input type="checkbox" data-ing-toggle ${ing.enabled ? 'checked' : ''} class="w-3.5 h-3.5 shrink-0 cursor-pointer rounded" style="accent-color:${c}">
+            <span class="w-2 h-2 rounded-full shrink-0" style="background:${c}"></span>
+            <input type="text" value="${escAttr(ing.name)}" data-ing-name placeholder="ชื่อ" class="min-input flex-1 text-xs font-semibold min-w-0" style="color:${c}">
+            <input type="number" step="any" min="0" value="${ing.qty}" data-ing-qty class="min-input w-14 text-xs text-right num-highlight shrink-0">
+            <input type="text" value="${escAttr(ing.unit)}" data-ing-unit class="min-input w-9 text-[10px] text-void-400 text-center shrink-0">
+            <span class="text-[10px] text-void-400 font-mono">฿</span>
+            <input type="number" step="any" min="0" value="${ing.price}" data-ing-price class="min-input w-14 text-xs text-right num-highlight shrink-0">
+            ${(ing.pricePer && ing.pricePer !== 1) ? `<span class="text-[9px] text-void-500 font-mono shrink-0">/${ing.pricePer}</span>` : ''}
+            <button type="button" data-ing-delete class="w-5 h-5 rounded text-rose-400 hover:bg-rose-500/10 text-[11px] shrink-0 leading-none">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function bindIngredientEvents(fk) {
+    const container = fk === 'red' ? settingsDom.redIngredientsList : settingsDom.bmIngredientsList;
+    if (!container || container.dataset.bound) return;
+    container.dataset.bound = '1';
+
+    container.addEventListener('input', e => {
+        const row = e.target.closest('[data-ing-id]');
+        if (!row || row.dataset.formula !== fk) return;
+        const ing = findIng(fk, row.dataset.ingId);
+        if (!ing) return;
+        if (e.target.matches('[data-ing-qty]')) ing.qty = Math.max(0, parseNum(e.target.value));
+        else if (e.target.matches('[data-ing-price]')) ing.price = Math.max(0, parseNum(e.target.value));
+        else if (e.target.matches('[data-ing-name]')) ing.name = e.target.value;
+        else if (e.target.matches('[data-ing-unit]')) ing.unit = e.target.value || 'ml';
+        else return;
+        onSettingsChange();
+    });
+
+    container.addEventListener('change', e => {
+        if (!e.target.matches('[data-ing-toggle]')) return;
+        const row = e.target.closest('[data-ing-id]');
+        const ing = findIng(fk, row.dataset.ingId);
+        if (!ing) return;
+        ing.enabled = e.target.checked;
+        onSettingsChange();
+    });
+
+    container.addEventListener('click', e => {
+        if (!e.target.matches('[data-ing-delete]')) return;
+        const row = e.target.closest('[data-ing-id]');
+        const ings = getIngredients(fk);
+        const idx = ings.findIndex(i => i.id === row.dataset.ingId);
+        if (idx < 0) return;
+        if (!confirm(`ลบ "${ings[idx].name}" ออกจากสูตร?`)) return;
+        ings.splice(idx, 1);
+        renderIngredientSettings(fk);
+        onSettingsChange();
+    });
+}
+
+function addIngredient(fk) {
+    const ings = getIngredients(fk);
+    ings.push({
+        id: fk + '_custom_' + Date.now(),
+        name: 'วัตถุดิบใหม่',
+        unit: 'ml',
+        enabled: true,
+        qty: 10,
+        price: 1,
+        pricePer: 1,
+        color: pickNextColor(ings)
+    });
+    renderIngredientSettings(fk);
+    onSettingsChange();
+    showToast('✓ เพิ่มวัตถุดิบใหม่แล้ว · แก้ชื่อ/ราคาได้ทันที');
+}
+
+document.querySelectorAll('[data-add-ingredient]').forEach(btn => {
+    btn.addEventListener('click', () => addIngredient(btn.dataset.addIngredient));
+});
+
+function onSettingsChange() {
+    calculateBoil();
+    updateSettingsSummary();
+    updatePresetDescriptions();
+}
+
+/* Populate settings UI */
+function populateSettingsUI() {
+    settingsDom.priceLeaf.value = SETTINGS.priceLeaf;
+    settingsDom.gasPerL.value = SETTINGS.gasPerL;
+    settingsDom.priceBottle.value = SETTINGS.priceBottle;
+    settingsDom.hiddenCost.value = SETTINGS.hiddenCost;
+    settingsDom.sellWater.value = SETTINGS.sellWater;
+    settingsDom.ratio.value = SETTINGS.ratio;
+    settingsDom.extract.value = SETTINGS.extract;
+    settingsDom.bottleSize.value = SETTINGS.bottleSize;
+    if (settingsDom.mixLoss) settingsDom.mixLoss.value = SETTINGS.mixLossPct;
+    settingsDom.redBaseWater.value = SETTINGS.redBaseWater;
+    settingsDom.redFinalVol.value = SETTINGS.redFinalVol;
+    settingsDom.redSell.value = SETTINGS.redSellPrice;
+    settingsDom.bmBaseWater.value = SETTINGS.bmBaseWater;
+    settingsDom.bmFinalVol.value = SETTINGS.bmFinalVol;
+    settingsDom.bmSell.value = SETTINGS.bmSellPrice;
+}
+
+/* Compute cost per bottle for a formula (used in summary) */
+function calcCostPerBottle(fk) {
+    const ings = getIngredients(fk).filter(i => i.enabled);
+    const base = getBaseWater(fk);
+    const finalVol = getFinalVol(fk);
+    const finalFactor = finalVol / base;
+    const netFactor = getNetFactor();
+
+    // 1 bottle = bottleSize (ml) → output L
+    const outputPerBottleL = (SETTINGS.bottleSize || 1000) / 1000;
+    // Net water inside 1 bottle (in base-water units)
+    const netWaterPerBottle = outputPerBottleL / finalFactor;
+    // Total water input needed (accounting for loss)
+    const totalWaterPerBottle = netFactor > 0 ? netWaterPerBottle / netFactor : netWaterPerBottle;
+
+    // Water cost
+    let cost = totalWaterPerBottle * boilCostPerL;
+
+    // Ingredients scaled to total water
+    ings.forEach(ing => {
+        const value = totalWaterPerBottle * (ing.qty / base);
+        let finalValue = value;
+        if (['เม็ด','ชิ้น','ขวด','อัน'].includes(ing.unit)) finalValue = Math.round(value);
+        cost += finalValue * (ing.price / (ing.pricePer || 1));
+    });
+    cost += SETTINGS.priceBottle + SETTINGS.hiddenCost;
+    return cost;
+}
+
+function updateSettingsSummary() {
+    settingsDom.sumWaterCost.textContent = `฿${fmt(boilCostPerL, 2)}`;
+    const redCost = calcCostPerBottle('red');
+    const bmCost = calcCostPerBottle('bm');
+    settingsDom.sumRedCost.textContent = `฿${fmt(redCost, 2)}`;
+    settingsDom.sumBMCost.textContent = `฿${fmt(bmCost, 2)}`;
+    const profitRed = SETTINGS.redSellPrice - redCost;
+    settingsDom.sumProfit.textContent = `฿${fmt(profitRed, 2)}`;
+}
+
+/* Settings bindings */
+const settingsBindings = [
+    ['priceLeaf','priceLeaf'], ['gasPerL','gasPerL'],
+    ['priceBottle','priceBottle'], ['hiddenCost','hiddenCost'],
+    ['sellWater','sellWater'], ['ratio','ratio'],
+    ['extract','extract'], ['bottleSize','bottleSize'],
+    ['mixLoss','mixLossPct'],
+    ['redBaseWater','redBaseWater'], ['redFinalVol','redFinalVol'], ['redSell','redSellPrice'],
+    ['bmBaseWater','bmBaseWater'], ['bmFinalVol','bmFinalVol'], ['bmSell','bmSellPrice']
+];
+
+settingsBindings.forEach(([elId, key]) => {
+    if (!settingsDom[elId]) return;
+    settingsDom[elId].addEventListener('input', (e) => {
+        const v = parseNum(e.target.value);
+        if (key === 'mixLossPct') {
+            SETTINGS[key] = Math.max(0, Math.min(90, v));
+        } else {
+            SETTINGS[key] = Math.max(0, v);
+        }
+        if (key === 'ratio') boilState.ratio = SETTINGS.ratio;
+        if (key === 'extract') boilState.extract = SETTINGS.extract;
+        if (key === 'priceLeaf') { boilState.pricePerKg = SETTINGS.priceLeaf; boilDom.pricePerKg.value = SETTINGS.priceLeaf; }
+        if (key === 'gasPerL') { boilState.gasPerL = SETTINGS.gasPerL; boilDom.gasPerL.value = SETTINGS.gasPerL; }
+        if (key === 'priceBottle') { boilState.bottleCost = SETTINGS.priceBottle; boilDom.bottleCostBoil.value = SETTINGS.priceBottle; }
+        if (key === 'hiddenCost') { boilState.hiddenCost = SETTINGS.hiddenCost; boilDom.hiddenCostBoil.value = SETTINGS.hiddenCost; }
+        calculateBoil();
+        updateSettingsSummary();
+        updatePresetDescriptions();
+    });
+});
+
+settingsDom.saveBtn.addEventListener('click', saveSettings);
+
+settingsDom.resetBtn.addEventListener('click', () => {
+    if (!confirm('รีเซ็ตการตั้งค่าทั้งหมดกลับเป็นค่าเริ่มต้น?')) return;
+    SETTINGS = JSON.parse(JSON.stringify(DEFAULTS));
+    populateSettingsUI();
+    renderIngredientSettings('red');
+    renderIngredientSettings('bm');
+    boilState.ratio = SETTINGS.ratio;
+    boilState.extract = SETTINGS.extract;
+    boilState.pricePerKg = SETTINGS.priceLeaf;
+    boilState.gasPerL = SETTINGS.gasPerL;
+    boilState.bottleCost = SETTINGS.priceBottle;
+    boilState.hiddenCost = SETTINGS.hiddenCost;
+    boilDom.pricePerKg.value = SETTINGS.priceLeaf;
+    boilDom.gasPerL.value = SETTINGS.gasPerL;
+    boilDom.bottleCostBoil.value = SETTINGS.priceBottle;
+    boilDom.hiddenCostBoil.value = SETTINGS.hiddenCost;
+    calculateBoil();
+    updateSettingsSummary();
+    updatePresetDescriptions();
+    saveSettings();
+    showToast('✓ รีเซ็ตการตั้งค่าทั้งหมดเรียบร้อย');
+});
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+populateSettingsUI();
+renderIngredientSettings('red');
+renderIngredientSettings('bm');
+bindIngredientEvents('red');
+bindIngredientEvents('bm');
+applyPreset('red');
+calculateBoil();
+updateSettingsSummary();
+updatePresetDescriptions();
+updateQuickBoilActive();
+updateQuickYieldActive();
+updateQuickMixActive();
+
+console.log('%c🍃 KRATOM Production Calculator v4.1.0 ready', 'color:#10b981;font-weight:bold;font-size:14px');
+console.log('%c   Water-loss adjustment enabled: ' + SETTINGS.mixLossPct + '%', 'color:#22d3ee;font-weight:600');
+</script>
+</body>
+</html>
