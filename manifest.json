@@ -2,7 +2,7 @@
   "name": "KRATOM Calculator Pro · SAMSEE",
   "short_name": "Kratom Calc",
   "description": "เครื่องคำนวณต้ม + ผสมน้ำกระท่อม S.SAMSEE",
-  "version": "5.0.0",
+  "version": "5.2.0",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
