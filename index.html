@@ -32,11 +32,7 @@
     </script>
     <style>
         * { -webkit-tap-highlight-color: transparent; }
-        html, body {
-            background: #000000;
-            color: #e5e7eb;
-            overscroll-behavior-y: none;
-        }
+        html, body { background: #000000; color: #e5e7eb; overscroll-behavior-y: none; }
         body::before {
             content: '';
             position: fixed;
@@ -48,12 +44,6 @@
             z-index: 0;
         }
         body > * { position: relative; z-index: 1; }
-        .card {
-            background: linear-gradient(180deg, #0d0d10 0%, #08080a 100%);
-            border: 1px solid #1a1a1f;
-            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-        }
-        .card:hover { border-color: #2e2e35; }
         .card-glass {
             background: rgba(13,13,16,0.88);
             backdrop-filter: blur(20px);
@@ -62,118 +52,48 @@
             border-radius: 16px;
         }
         .num-input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            min-width: 0;
+            background: transparent; border: none; color: #fff;
+            font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 0;
         }
         .num-input:focus { outline: none; }
         input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-        .field {
-            background: #08080a;
-            border: 1px solid #1a1a1f;
-            transition: all 0.2s ease;
-        }
-        .field:focus-within {
-            border-color: #2e2e35;
-            background: #0d0d10;
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.08);
-        }
         .step-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 7px;
-            background: #0a0a0c;
-            border: 1px solid #1f1f24;
-            color: #7a7a85;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            flex-shrink: 0;
-            transition: all 0.15s ease;
-            user-select: none;
-            line-height: 1;
+            width: 28px; height: 28px; border-radius: 7px; background: #0a0a0c; border: 1px solid #1f1f24;
+            color: #7a7a85; display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-size: 15px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0; transition: all 0.15s ease; user-select: none; line-height: 1;
         }
         .step-btn:hover { background: #131317; border-color: #2e2e35; color: #fff; }
-        .step-btn:active {
-            transform: scale(0.9);
-            background: rgba(16,185,129,0.15);
-            border-color: rgba(16,185,129,0.5);
-            color: #34d399;
-        }
+        .step-btn:active { transform: scale(0.9); background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.5); color: #34d399; }
         .tab-btn {
-            padding: 12px 18px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #56565f;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            position: relative;
+            padding: 12px 18px; font-size: 13px; font-weight: 600; color: #56565f;
+            border-bottom: 2px solid transparent; transition: all 0.2s ease; white-space: nowrap; position: relative;
         }
         .tab-btn:hover { color: #a8a8b0; }
-        .tab-btn.active {
-            color: #fff;
-            border-bottom-color: #10b981;
-        }
+        .tab-btn.active { color: #fff; border-bottom-color: #10b981; }
         .tab-btn.active.cyan { border-bottom-color: #06b6d4; color: #22d3ee; }
         .tab-btn.active.violet { border-bottom-color: #a78bfa; color: #a78bfa; }
         .collapse-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 11px;
-            border-radius: 8px;
-            background: #08080a;
-            border: 1px solid #1f1f24;
-            color: #7a7a85;
-            font-size: 11px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 8px;
+            background: #08080a; border: 1px solid #1f1f24; color: #7a7a85; font-size: 11px;
+            font-family: 'JetBrains Mono', monospace; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; user-select: none;
         }
         .collapse-toggle:hover { background: #131317; border-color: #2e2e35; color: #fff; }
         .collapse-toggle svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
         .collapse-toggle.collapsed svg { transform: rotate(-90deg); }
-        .collapse-body {
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
-        }
-        .collapse-body.collapsed {
-            max-height: 0 !important;
-            opacity: 0;
-            pointer-events: none;
-        }
+        .collapse-body { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; }
+        .collapse-body.collapsed { max-height: 0 !important; opacity: 0; pointer-events: none; }
         .tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            padding: 4px 9px;
-            border-radius: 5px;
-            background: #0d0d10;
-            color: #7a7a85;
-            border: 1px solid #1a1a1f;
-            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+            letter-spacing: 0.06em; padding: 4px 9px; border-radius: 5px;
+            background: #0d0d10; color: #7a7a85; border: 1px solid #1a1a1f; text-transform: uppercase;
         }
         .stat-box {
             background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px;
         }
         .stat-green { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02)); border-color: rgba(16,185,129,0.22); }
         .stat-cyan { background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(6,182,212,0.02)); border-color: rgba(6,182,212,0.22); }
@@ -187,120 +107,113 @@
         .val-rose { color: #fb7185; }
         .val-violet { color: #a78bfa; }
         .val-purple { color: #c4b5fd; }
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #1a1a1f 20%, #1a1a1f 80%, transparent);
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, #1a1a1f 20%, #1a1a1f 80%, transparent); }
+        /* Ingredient Card */
+        .ing-card {
+            background: #0a0a0c;
+            border: 1px solid #1a1a1f;
+            border-radius: 12px;
+            padding: 10px;
+            transition: all 0.15s ease;
         }
-        .ing-row {
+        .ing-card:hover { border-color: #2e2e35; background: #0d0d10; }
+        .ing-card.ing-compact {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 8px;
-            border-radius: 10px;
-            background: #0a0a0c;
-            border: 1px solid #1a1a1f;
-            transition: all 0.18s ease;
+            padding: 8px;
         }
-        .ing-row:hover { border-color: #232328; background: #0d0d10; }
-        .ing-row input[type="checkbox"] { cursor: pointer; accent-color: #10b981; }
-        .ing-row input::placeholder { color: #404048; }
+        .ing-card input[type="checkbox"] { cursor: pointer; accent-color: #10b981; }
+        .ing-card input[type="text"]:focus,
+        .ing-card input[type="number"]:focus { border-color: #10b981 !important; }
+        .ing-card input::placeholder { color: #404048; }
         .ing-del-btn {
-            width: 20px;
-            height: 20px;
-            border-radius: 5px;
-            color: #f87171;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 11px;
-            line-height: 1;
-            flex-shrink: 0;
-            transition: all 0.15s ease;
+            width: 28px; height: 28px; border-radius: 8px; color: #f87171;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-size: 12px; line-height: 1; flex-shrink: 0; transition: all 0.15s ease;
+            background: transparent; border: none;
         }
         .ing-del-btn:hover { background: rgba(248,113,113,0.15); }
-        .add-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 11px;
+        .ing-label {
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #6b7280; margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700;
+        }
+        .ing-field {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            border: 1px solid rgba(6,182,212,0.3);
-            background: rgba(6,182,212,0.08);
-            color: #22d3ee;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            white-space: nowrap;
+            padding: 6px 8px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.15s ease;
+            min-width: 0;
+        }
+        .ing-field:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+        .ing-unit-cost {
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+        .ing-total {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+        }
+        .add-btn {
+            display: inline-flex; align-items: center; gap: 4px; padding: 6px 11px;
+            border-radius: 8px; font-size: 11px; font-weight: 600;
+            border: 1px solid rgba(6,182,212,0.3); background: rgba(6,182,212,0.08);
+            color: #22d3ee; cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
         }
         .add-btn:hover { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.5); }
         .add-btn:active { transform: scale(0.96); }
         .btn-primary {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            font-weight: 600;
-            box-shadow: 0 4px 14px rgba(16,185,129,0.25);
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.25); transition: all 0.2s ease;
         }
         .btn-primary:hover { box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
         .btn-primary:active { transform: scale(0.97); }
         .btn-rose {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #fff;
-            font-weight: 600;
+            background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; font-weight: 600;
             transition: all 0.2s ease;
         }
         .btn-rose:active { transform: scale(0.97); }
         .btn-amber {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            font-weight: 600;
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 600;
             transition: all 0.2s ease;
         }
         .btn-amber:active { transform: scale(0.97); }
         .btn-cyan {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-            color: #fff;
-            font-weight: 600;
+            background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; font-weight: 600;
             transition: all 0.2s ease;
         }
         .btn-cyan:active { transform: scale(0.97); }
         .btn-violet {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: #fff;
-            font-weight: 600;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; font-weight: 600;
             transition: all 0.2s ease;
         }
         .btn-violet:active { transform: scale(0.97); }
         .btn-ghost {
-            background: #0d0d10;
-            border: 1px solid #1f1f24;
-            color: #a8a8b0;
-            font-weight: 600;
+            background: #0d0d10; border: 1px solid #1f1f24; color: #a8a8b0; font-weight: 600;
             transition: all 0.2s ease;
         }
         .btn-ghost:hover { background: #131317; border-color: #2e2e35; color: #fff; }
         .btn-ghost:active { transform: scale(0.98); }
         #toast {
-            background: #0d0d10;
-            border: 1px solid #1f1f24;
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
+            background: #0d0d10; border: 1px solid #1f1f24; color: #fff;
+            font-family: 'JetBrains Mono', monospace; font-weight: 600;
             box-shadow: 0 20px 60px -15px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.03) inset;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
         }
-        #toast.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
+        #toast.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
         .glass-header {
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid #131317;
         }
         .logo-mark {
@@ -308,9 +221,7 @@
             box-shadow: 0 0 0 1px rgba(16,185,129,0.3), 0 4px 20px -4px rgba(16,185,129,0.5), inset 0 1px 0 0 rgba(255,255,255,0.15);
         }
         .num-mono {
-            font-family: 'JetBrains Mono', monospace;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.02em;
+            font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
         }
         #installBanner {
             background: linear-gradient(135deg, #0d0d10, #08080a);
@@ -328,9 +239,27 @@
         ::selection { background: #10b981; color: #000; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .hint-box {
+            background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.2);
+            border-radius: 10px; padding: 8px 12px; font-size: 11px; color: #67e8f9;
+            font-family: 'JetBrains Mono', monospace;
+        }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen">
+
+    <datalist id="common-units">
+        <option value="ml"></option>
+        <option value="L"></option>
+        <option value="g"></option>
+        <option value="kg"></option>
+        <option value="เม็ด"></option>
+        <option value="ชิ้น"></option>
+        <option value="ขวด"></option>
+        <option value="อัน"></option>
+        <option value="ฟอง"></option>
+        <option value="ลูก"></option>
+    </datalist>
 
     <div class="min-h-screen flex flex-col">
 
@@ -347,11 +276,11 @@
                                 <span class="font-display font-extrabold text-sm text-white tracking-tight">KRATOM</span>
                                 <span class="tag">S.SAMSEE</span>
                             </div>
-                            <p class="text-[10.5px] text-void-400 font-medium mt-0.5 tracking-wide" style="color:#7a7a85">Production Calculator</p>
+                            <p class="text-[10.5px] text-gray-500 font-medium mt-0.5 tracking-wide">Production Calculator</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-full font-bold" id="versionBadge">v5.0.0</span>
+                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-full font-bold" id="versionBadge">v5.2.0</span>
                         <div class="hidden sm:block font-mono text-xs text-gray-500 font-semibold tabular-nums" id="clock">--:--:--</div>
                     </div>
                 </div>
@@ -362,7 +291,6 @@
         <main class="flex-1">
             <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-5">
 
-                <!-- TABS -->
                 <div class="border-b border-white/5 mb-5 -mx-3 px-3 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none">
                     <div class="flex gap-1">
                         <button class="tab-btn active" data-tab="brew">🍃 คำนวณต้ม</button>
@@ -387,29 +315,30 @@
                             </button>
                         </div>
                         <div class="text-xs text-gray-500 mb-2">
-                            สัดส่วน <span class="text-emerald-400 font-bold num-mono" id="brewRatioLabel">25</span>:1 ·
-                            สกัดได้ <span class="text-amber-400 font-bold num-mono" id="brewExtractLabel">80</span>% ·
-                            น้ำระเหย <span class="text-rose-400 font-bold num-mono" id="brewEvapLabel">5</span>% ·
+                            สัดส่วน <span class="text-emerald-400 font-bold num-mono" id="brewRatioLabel">20</span>:1 ·
+                            น้ำดิบที่ได้ <span class="text-amber-400 font-bold num-mono" id="brewExtractLabel">80</span>% ·
                             ขวด <span class="text-cyan-400 font-bold num-mono" id="brewBottleLabel">1000</span>ml
                         </div>
                         <div id="brewConfig" class="collapse-body collapsed" style="max-height: 500px;">
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-xl bg-black/40 border border-white/5 mt-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-black/40 border border-white/5 mt-3">
                                 <div>
-                                    <label class="text-[10px] text-gray-400 block mb-1.5 font-mono uppercase tracking-wider">อัตราส่วน (น้ำ:ใบ)</label>
-                                    <input type="number" id="cfgRatio" value="25" step="0.5" min="1" class="w-full bg-black/60 border border-white/10 rounded-xl p-2.5 text-white font-bold text-center num-mono text-sm">
+                                    <label class="text-[10px] text-gray-400 block mb-1.5 font-mono uppercase tracking-wider">อัตราส่วน (น้ำ : ใบ)</label>
+                                    <input type="number" id="cfgRatio" value="20" step="0.5" min="1" class="w-full bg-black/60 border border-white/10 rounded-xl p-2.5 text-white font-bold text-center num-mono text-sm">
+                                    <p class="text-[10px] text-gray-600 mt-1 text-center">ใบ 1 kg → น้ำ <span id="ratioHint">20</span> L</p>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] text-amber-400 block mb-1.5 font-mono uppercase tracking-wider">% สกัด</label>
+                                    <label class="text-[10px] text-amber-400 block mb-1.5 font-mono uppercase tracking-wider">% น้ำดิบที่ได้</label>
                                     <input type="number" id="cfgExtract" value="80" step="1" min="1" max="100" class="w-full bg-black/60 border border-amber-500/25 rounded-xl p-2.5 text-amber-400 font-bold text-center num-mono text-sm">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] text-rose-400 block mb-1.5 font-mono uppercase tracking-wider">% น้ำระเหย</label>
-                                    <input type="number" id="cfgEvap" value="5" step="0.5" min="0" max="50" class="w-full bg-black/60 border border-rose-500/25 rounded-xl p-2.5 text-rose-400 font-bold text-center num-mono text-sm">
+                                    <p class="text-[10px] text-gray-600 mt-1 text-center">น้ำ <span id="extractHint">20</span> L → <span id="extractResult" class="text-amber-400 font-bold">16</span> L</p>
                                 </div>
                                 <div>
                                     <label class="text-[10px] text-cyan-400 block mb-1.5 font-mono uppercase tracking-wider">ขนาดขวด (ml)</label>
                                     <input type="number" id="cfgBottleMl" value="1000" step="50" min="50" class="w-full bg-black/60 border border-cyan-500/25 rounded-xl p-2.5 text-cyan-400 font-bold text-center num-mono text-sm">
+                                    <p class="text-[10px] text-gray-600 mt-1 text-center">→ <span id="bottleHint" class="text-cyan-400 font-bold">16</span> ขวด / กก.</p>
                                 </div>
+                            </div>
+                            <div class="hint-box mt-3">
+                                💡 สูตรมาตรฐาน: ใบ 1 kg + น้ำ 20 L → ได้น้ำดิบ 16 L (80% ของน้ำที่ใส่)
                             </div>
                         </div>
                     </div>
@@ -423,17 +352,17 @@
                             <div>
                                 <label class="text-xs text-gray-400 mb-1.5 block">ใบกระท่อม (กก.)</label>
                                 <input type="number" id="brewLeaves" placeholder="0.00" step="0.1" min="0" value="3" class="w-full bg-black/40 border border-emerald-500/25 rounded-xl p-3 text-white font-semibold text-lg num-mono">
-                                <p class="text-[10px] text-gray-600 mt-1">← ช่องนี้คำนวณน้ำ + extract</p>
+                                <p class="text-[10px] text-gray-600 mt-1">← คำนวณน้ำ + extract</p>
                             </div>
                             <div>
                                 <label class="text-xs text-gray-400 mb-1.5 block">น้ำเปล่า (ลิตร)</label>
                                 <input type="number" id="brewWater" placeholder="0.00" step="0.5" min="0" class="w-full bg-black/40 border border-cyan-500/25 rounded-xl p-3 text-white font-semibold text-lg num-mono">
-                                <p class="text-[10px] text-gray-600 mt-1">← ช่องนี้คำนวณใบ + extract</p>
+                                <p class="text-[10px] text-gray-600 mt-1">← คำนวณใบ + extract</p>
                             </div>
                             <div>
                                 <label class="text-xs text-gray-400 mb-1.5 block">น้ำดิบสุทธิ (ลิตร)</label>
                                 <input type="number" id="brewExtractL" placeholder="0.00" step="0.5" min="0" class="w-full bg-black/40 border border-amber-500/25 rounded-xl p-3 text-white font-semibold text-lg num-mono">
-                                <p class="text-[10px] text-gray-600 mt-1">← ช่องนี้คำนวณย้อนกลับ</p>
+                                <p class="text-[10px] text-gray-600 mt-1">← คำนวณย้อนกลับ</p>
                             </div>
                         </div>
                     </div>
@@ -464,9 +393,7 @@
                                 <div class="text-xl font-extrabold val-violet num-mono"><span id="resBrewBottles">0</span> <span class="text-xs font-semibold text-gray-500">ขวด</span></div>
                             </div>
                         </div>
-
                         <div class="divider my-4"></div>
-
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between items-center gap-2">
                                 <span class="text-gray-400">① ต้นทุนใบกระท่อม <span class="text-gray-500 text-xs font-mono">(<span id="brLeaves">0</span> kg × ฿<span id="brLeafPrice">100</span>)</span></span>
@@ -564,10 +491,10 @@
                             </div>
                         </div>
 
-                        <div id="redIngEditor" class="collapse-body collapsed" style="max-height: 800px;">
+                        <div id="redIngEditor" class="collapse-body collapsed" style="max-height: 900px;">
                             <div class="p-3 rounded-xl bg-black/30 border border-red-500/15 mb-3">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-[10px] text-red-400 uppercase tracking-widest font-mono font-bold">📋 วัตถุดิบในสูตร (ต่อน้ำดิบฐาน)</span>
+                                    <span class="text-[10px] text-red-400 uppercase tracking-widest font-mono font-bold">📋 วัตถุดิบในสูตร</span>
                                     <button onclick="addMixIngredient('RED')" class="add-btn">+ เพิ่ม</button>
                                 </div>
                                 <div id="redIngList" class="space-y-2"></div>
@@ -583,7 +510,6 @@
                                     <button class="step-btn" data-step="redWaterInput" data-val="0.5">+</button>
                                 </div>
                             </div>
-
                             <div id="redReverseInput" class="collapse-body collapsed" style="max-height: 300px;">
                                 <div class="p-3 rounded-xl bg-black/30 border border-red-500/15">
                                     <label class="text-[10px] text-red-400 uppercase tracking-widest font-mono font-bold block mb-2">🎯 เป้าหมายจำนวนขวด</label>
@@ -642,10 +568,10 @@
                             </div>
                         </div>
 
-                        <div id="bmIngEditor" class="collapse-body collapsed" style="max-height: 800px;">
+                        <div id="bmIngEditor" class="collapse-body collapsed" style="max-height: 900px;">
                             <div class="p-3 rounded-xl bg-black/30 border border-amber-500/15 mb-3">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-[10px] text-amber-400 uppercase tracking-widest font-mono font-bold">📋 วัตถุดิบในสูตร (ต่อน้ำดิบฐาน)</span>
+                                    <span class="text-[10px] text-amber-400 uppercase tracking-widest font-mono font-bold">📋 วัตถุดิบในสูตร</span>
                                     <button onclick="addMixIngredient('BM')" class="add-btn">+ เพิ่ม</button>
                                 </div>
                                 <div id="bmIngList" class="space-y-2"></div>
@@ -661,7 +587,6 @@
                                     <button class="step-btn" data-step="bmWaterInput" data-val="0.5">+</button>
                                 </div>
                             </div>
-
                             <div id="bmReverseInput" class="collapse-body collapsed" style="max-height: 300px;">
                                 <div class="p-3 rounded-xl bg-black/30 border border-amber-500/15">
                                     <label class="text-[10px] text-amber-400 uppercase tracking-widest font-mono font-bold block mb-2">🎯 เป้าหมายจำนวนขวด</label>
@@ -771,6 +696,9 @@
                                 <button onclick="resetIngredients('RED')" class="btn-ghost px-3 py-1.5 rounded-lg text-xs">↺ ค่าเริ่มต้น</button>
                             </div>
                         </div>
+                        <div class="hint-box mb-3">
+                            💡 ตั้งราคาแบบ "฿12 ต่อ 60ml" → ใส่ price = 12, pricePer = 60 ระบบจะคำนวณต้นทุนจริงต่อหน่วยให้อัตโนมัติ
+                        </div>
                         <div id="setRedList" class="space-y-2"></div>
                     </div>
 
@@ -786,6 +714,9 @@
                                 <button onclick="addSettingsIngredient('BM')" class="add-btn">+ เพิ่ม</button>
                                 <button onclick="resetIngredients('BM')" class="btn-ghost px-3 py-1.5 rounded-lg text-xs">↺ ค่าเริ่มต้น</button>
                             </div>
+                        </div>
+                        <div class="hint-box mb-3">
+                            💡 ตั้งราคาแบบ "฿12 ต่อ 60ml" → ใส่ price = 12, pricePer = 60 ระบบจะคำนวณต้นทุนจริงต่อหน่วยให้อัตโนมัติ
                         </div>
                         <div id="setBmList" class="space-y-2"></div>
                     </div>
@@ -814,7 +745,7 @@
                         <span>·</span>
                         <span>KRATOM</span>
                         <span>·</span>
-                        <span class="font-mono" id="footerVersion">v5.0.0</span>
+                        <span class="font-mono" id="footerVersion">v5.2.0</span>
                     </div>
                     <span>|| เครื่องคำนวณการผลิตและผสม ||</span>
                 </div>
@@ -847,12 +778,13 @@
     <!-- ═══════════════════════════════════════════════════════════ -->
     <script>
     /* ============================================================
-       KRATOM CALCULATOR PRO — v5.0.0
-       Corrected calculation formulas from POS v16.0.2
+       KRATOM CALCULATOR PRO — v5.2.0
+       NEW: Ingredient editor overhaul (add/edit/delete fixed)
        ============================================================ */
 
-    const STORAGE_KEY = 'kratom_calc_v5';
-    const APP_VERSION = 'v5.0.0';
+    const STORAGE_KEY = 'kratom_calc_v51'; // Keep same key for backward compat
+    const APP_VERSION = 'v5.2.0';
+    const COMMON_UNITS = ['ml', 'L', 'g', 'kg', 'เม็ด', 'ชิ้น', 'ขวด', 'อัน', 'ฟอง', 'ลูก'];
 
     const $ = id => document.getElementById(id);
     const parseNum = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
@@ -868,28 +800,30 @@
         return fmt(v, 2);
     }
 
+    function hexA(hex, a) {
+        const h = hex.replace('#', '');
+        const r = parseInt(h.substring(0, 2), 16);
+        const g = parseInt(h.substring(2, 4), 16);
+        const b = parseInt(h.substring(4, 6), 16);
+        return `rgba(${r},${g},${b},${a})`;
+    }
+
     /* ─── DEFAULTS ─── */
     const DEFAULT_CONFIG = {
-        // Brew costs
         costLeaves: 100,
         costBottle: 5,
         costHidden: 4,
         brewUtilityCostPerLiter: 2,
         brewLaborCostPerKg: 20,
-        // Brew params
-        ratio: 25,
+        ratio: 20,
         extractPercent: 80,
-        evaporationPercent: 5,
         bottleMl: 1000,
-        // Mix params
         mixBaseWater: 21,
         mixBottlePerLiter: 1,
         mixYieldPercent: 90,
-        // Sell prices
         sellPriceRed: 35,
         sellPriceBm: 35,
         sellPriceOriginal: 25,
-        // Recipes
         redIngredients: [
             { id: 'red_coke',   name: 'โค้กฝาแดง',    unit: 'L',  enabled: true, qty: 7,   price: 15, pricePer: 1,  color: '#ef4444' },
             { id: 'red_syrup',  name: 'ยาแก้ไอฝาแดง', unit: 'ml', enabled: true, qty: 140, price: 12, pricePer: 60, color: '#f472b6' },
@@ -921,6 +855,12 @@
                 const merged = Object.assign({}, DEFAULT_CONFIG, parsed);
                 if (!Array.isArray(merged.redIngredients) || !merged.redIngredients.length) merged.redIngredients = JSON.parse(JSON.stringify(DEFAULT_CONFIG.redIngredients));
                 if (!Array.isArray(merged.bmIngredients) || !merged.bmIngredients.length) merged.bmIngredients = JSON.parse(JSON.stringify(DEFAULT_CONFIG.bmIngredients));
+                if (merged.ratio === 25) merged.ratio = 20;
+                if (merged.evaporationPercent !== undefined) {
+                    const legacyYield = (merged.extractPercent / 100) * (1 - (merged.evaporationPercent / 100));
+                    merged.extractPercent = Math.round(legacyYield * 100);
+                    delete merged.evaporationPercent;
+                }
                 return merged;
             }
         } catch (e) { console.warn('Load config failed:', e); }
@@ -955,26 +895,24 @@
     updateClock();
 
     /* ══════════════════════════════════════════════════════════ */
-    /* BREW CALCULATION — with evaporation                      */
+    /* BREW CALCULATION                                          */
     /* ══════════════════════════════════════════════════════════ */
     function calcBrew() {
         const cfg = CONFIG;
-        const evapFactor = 1 - Math.max(0, Math.min(50, cfg.evaporationPercent)) / 100;
         const extractFactor = Math.max(0, Math.min(100, cfg.extractPercent)) / 100;
-        const yieldFactor = evapFactor * extractFactor;
-
         let leaves, water, rawExtract;
+
         if (brewState.lastInput === 'leaves') {
             leaves = Math.max(0, brewState.leaves);
             water = leaves * cfg.ratio;
-            rawExtract = water * yieldFactor;
+            rawExtract = water * extractFactor;
         } else if (brewState.lastInput === 'water') {
             water = Math.max(0, brewState.water);
             leaves = cfg.ratio > 0 ? water / cfg.ratio : 0;
-            rawExtract = water * yieldFactor;
+            rawExtract = water * extractFactor;
         } else {
             rawExtract = Math.max(0, brewState.extractL);
-            water = yieldFactor > 0 ? rawExtract / yieldFactor : 0;
+            water = extractFactor > 0 ? rawExtract / extractFactor : 0;
             leaves = cfg.ratio > 0 ? water / cfg.ratio : 0;
         }
 
@@ -986,34 +924,30 @@
         const costPerLiter = rawExtract > 0 ? totalCost / rawExtract : 0;
         const costPerBottle = bottles > 0 ? totalCost / bottles : 0;
 
-        return { leaves, water, rawExtract, bottles, leafCost, utilityCost, laborCost, totalCost, costPerLiter, costPerBottle, yieldFactor };
+        return { leaves, water, rawExtract, bottles, leafCost, utilityCost, laborCost, totalCost, costPerLiter, costPerBottle };
     }
 
     function renderBrew() {
         const r = calcBrew();
 
-        // Sync inputs (except last-input to avoid loops)
         if (brewState.lastInput !== 'leaves') $('brewLeaves').value = round(r.leaves, 3);
         if (brewState.lastInput !== 'water') $('brewWater').value = round(r.water, 3);
         if (brewState.lastInput !== 'extractL') $('brewExtractL').value = round(r.rawExtract, 3);
 
-        // Update labels
         $('brewRatioLabel').textContent = CONFIG.ratio;
         $('brewExtractLabel').textContent = CONFIG.extractPercent;
-        $('brewEvapLabel').textContent = CONFIG.evaporationPercent;
         $('brewBottleLabel').textContent = CONFIG.bottleMl;
+        $('ratioHint').textContent = CONFIG.ratio;
+        $('extractHint').textContent = fmt(CONFIG.ratio, 0);
+        $('extractResult').textContent = fmt(CONFIG.ratio * CONFIG.extractPercent / 100, 1);
+        $('bottleHint').textContent = fmt(Math.floor((CONFIG.ratio * CONFIG.extractPercent / 100) * 1000 / CONFIG.bottleMl));
 
-        // Results
         $('resBrewLeaves').textContent = fmt(r.leaves, 2);
         $('resBrewWater').textContent = fmt(r.water, 2);
         $('resBrewExtract').textContent = fmt(r.rawExtract, 2);
         $('resBrewBottles').textContent = fmt(r.bottles);
+        $('brewYieldBadge').textContent = `yield ${fmt(CONFIG.extractPercent, 0)}% · ${fmt(r.bottles)} ขวด`;
 
-        // Yield badge
-        const pctYield = r.leaves > 0 ? (r.rawExtract / (r.leaves * CONFIG.ratio) * 100) : 0;
-        $('brewYieldBadge').textContent = `${fmt(pctYield, 1)}% yield`;
-
-        // Cost breakdown
         $('brLeaves').textContent = fmt(r.leaves, 2);
         $('brLeafPrice').textContent = fmt(CONFIG.costLeaves, 2);
         $('brWater').textContent = fmt(r.water, 2);
@@ -1026,11 +960,8 @@
         $('costBrewTotal').textContent = '฿' + fmt(r.totalCost, 2);
         $('costPerLiter').textContent = '฿' + fmt(r.costPerLiter, 2);
         $('costPerBottleBrew').textContent = '฿' + fmt(r.costPerBottle, 2);
-
-        // Forward labels
         $('forwardAmountLabel').textContent = fmt(r.rawExtract, 2) + ' L';
         $('forwardCostLabel').textContent = fmt(r.costPerLiter, 2);
-
         return r;
     }
 
@@ -1050,13 +981,10 @@
         renderBrew();
     });
 
-    /* ─── Forward to mix ─── */
     function forwardToMix(formulaKey) {
         const r = calcBrew();
-        if (r.rawExtract <= 0) {
-            showToast('กรุณากรอกข้อมูลต้มก่อน', 'error');
-            return;
-        }
+        if (r.rawExtract <= 0) { showToast('กรุณากรอกข้อมูลต้มก่อน', 'error'); return; }
+
         if (formulaKey === 'RED') {
             mixRed.waterInput = r.rawExtract;
             mixRed.lastInput = 'water';
@@ -1095,7 +1023,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════ */
-    /* MIX CALCULATION — with yield% and base-water scaling     */
+    /* MIX CALCULATION                                          */
     /* ══════════════════════════════════════════════════════════ */
     function calcMix(formulaKey, mode, inputValue, brewCostPerLiter) {
         const cfg = CONFIG;
@@ -1104,7 +1032,6 @@
         const yieldFactor = Math.max(0.01, Math.min(1, cfg.mixYieldPercent / 100));
         const bottlePerL = Math.max(0.1, cfg.mixBottlePerLiter);
 
-        // Calculate extra volume per base water (from liquid ingredients)
         let extraVolPerBase = 0;
         ings.forEach(ing => {
             if (ing.unit === 'L') extraVolPerBase += ing.qty;
@@ -1125,17 +1052,11 @@
             rawWater = totalVol / multiplier;
         }
 
-        // Ingredient results
         const results = [];
         const waterCost = rawWater * brewCostPerLiter;
         results.push({
-            id: formulaKey + '_water',
-            name: 'น้ำดิบ (extract)',
-            unit: 'L',
-            qty: rawWater,
-            cost: waterCost,
-            color: '#06b6d4',
-            isWater: true
+            id: formulaKey + '_water', name: 'น้ำดิบ (extract)', unit: 'L',
+            qty: rawWater, cost: waterCost, color: '#06b6d4', isWater: true
         });
 
         ings.forEach(ing => {
@@ -1182,12 +1103,13 @@
     function renderMixCostDetail(formulaKey, r) {
         const containerId = formulaKey === 'RED' ? 'redCostBreakdown' : 'bmCostBreakdown';
         const container = $(containerId);
+        const bpl = formulaKey === 'RED' ? mixRed.brewCostPerLiter : mixBm.brewCostPerLiter;
         const circles = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
         let idx = 0;
         let html = r.results.map(ing => {
             const note = ing.isWater
-                ? `(${fmt(ing.qty, 2)} L × ฿${fmt(mixRed.brewCostPerLiter || mixBm.brewCostPerLiter || 0, 2)})`
-                : `(${fmtQty(ing.qty, ing.unit)} ${ing.unit} × ฿${fmt(ing.price / (ing.pricePer || 1), 2)})`;
+                ? `(${fmt(ing.qty, 2)} L × ฿${fmt(bpl || 0, 2)})`
+                : `(${fmtQty(ing.qty, ing.unit)} ${ing.unit} × ฿${fmt(ing.price / (ing.pricePer || 1), 3)})`;
             return `<div class="flex justify-between gap-2">
                 <span class="text-gray-400">${circles[idx++]} ${esc(ing.name)} <span class="text-gray-500 font-mono text-[10px]">${note}</span></span>
                 <span class="font-mono font-bold num-mono" style="color:${ing.color}">฿${fmt(ing.cost, 2)}</span>
@@ -1216,10 +1138,8 @@
         const inputVal = mode === 'water' ? mixRed.waterInput : mixRed.bottlesInput;
         const bpl = mixRed.brewCostPerLiter || 0;
         const r = calcMix('RED', mode, inputVal, bpl);
-
         renderMixIngredientResults('RED', r);
         renderMixCostDetail('RED', r);
-
         $('redTotalVol').textContent = fmt(r.totalVol, 2) + ' L';
         $('redLostVol').textContent = '−' + fmt(r.totalVol - r.netVol, 2) + ' L';
         $('redNetVol').textContent = fmt(r.netVol, 2) + ' L';
@@ -1230,7 +1150,6 @@
         $('redMargin').textContent = fmt(r.margin, 1) + '%';
         $('redYieldLabel').textContent = (100 - r.yieldPct) + '%';
 
-        // Sync reverse input if in bottles mode
         if (mode === 'bottles') {
             mixRed.waterInput = r.rawWater;
             $('redWaterInput').value = round(r.rawWater, 2);
@@ -1245,10 +1164,8 @@
         const inputVal = mode === 'water' ? mixBm.waterInput : mixBm.bottlesInput;
         const bpl = mixBm.brewCostPerLiter || 0;
         const r = calcMix('BM', mode, inputVal, bpl);
-
         renderMixIngredientResults('BM', r);
         renderMixCostDetail('BM', r);
-
         $('bmTotalVol').textContent = fmt(r.totalVol, 2) + ' L';
         $('bmLostVol').textContent = '−' + fmt(r.totalVol - r.netVol, 2) + ' L';
         $('bmNetVol').textContent = fmt(r.netVol, 2) + ' L';
@@ -1299,16 +1216,8 @@
         }
     }
 
-    function hexA(hex, a) {
-        const h = hex.replace('#', '');
-        const r = parseInt(h.substring(0, 2), 16);
-        const g = parseInt(h.substring(2, 4), 16);
-        const b = parseInt(h.substring(4, 6), 16);
-        return `rgba(${r},${g},${b},${a})`;
-    }
-
     /* ══════════════════════════════════════════════════════════ */
-    /* INGREDIENT EDITORS (Mix tab + Settings tab)              */
+    /* INGREDIENT EDITORS v5.2.0                                */
     /* ══════════════════════════════════════════════════════════ */
     const COLOR_PALETTE = ['#fb7185', '#f472b6', '#a78bfa', '#818cf8', '#38bdf8', '#22d3ee', '#2dd4bf', '#34d399', '#a3e635', '#fbbf24', '#fb923c', '#f87171', '#e879f9', '#facc15'];
 
@@ -1316,6 +1225,68 @@
         const used = new Set(ings.map(i => i.color));
         for (const c of COLOR_PALETTE) if (!used.has(c)) return c;
         return COLOR_PALETTE[ings.length % COLOR_PALETTE.length];
+    }
+
+    function calcIngUnitCost(ing) {
+        return ing.price / (ing.pricePer || 1);
+    }
+
+    function calcIngTotal(ing) {
+        return ing.qty * calcIngUnitCost(ing);
+    }
+
+    /* Render one ingredient card */
+    function renderIngCard(ing, formulaKey, compact) {
+        const unitCost = calcIngUnitCost(ing);
+        const total = calcIngTotal(ing);
+        const pricePerDisplay = (ing.pricePer && ing.pricePer !== 1) ? ing.pricePer : 1;
+
+        if (compact) {
+            return `
+            <div class="ing-card ing-compact" data-formula="${formulaKey}" data-id="${esc(ing.id)}">
+                <input type="checkbox" data-field="enabled" ${ing.enabled ? 'checked' : ''} class="w-3.5 h-3.5 flex-shrink-0 rounded" style="accent-color:${ing.color}">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${ing.color}"></span>
+                <input type="text" data-field="name" value="${esc(ing.name)}" placeholder="ชื่อ" class="flex-1 bg-transparent border-none text-xs font-semibold outline-none min-w-0 px-1" style="color:${ing.color}">
+                <input type="number" data-field="qty" step="any" min="0" value="${ing.qty}" class="ing-field" style="width:60px;text-align:right;">
+                <input type="text" data-field="unit" list="common-units" value="${esc(ing.unit)}" class="ing-field" style="width:44px;text-align:center;font-size:10px;">
+                <span class="text-[10px] font-mono font-bold flex-shrink-0" style="color:${ing.color};min-width:52px;text-align:right;" data-total>฿${fmt(total, 2)}</span>
+                <button type="button" data-action="del" class="ing-del-btn" style="width:24px;height:24px;font-size:10px;">✕</button>
+            </div>`;
+        }
+
+        return `
+        <div class="ing-card" data-formula="${formulaKey}" data-id="${esc(ing.id)}">
+            <div class="flex items-center gap-2 mb-2.5">
+                <input type="checkbox" data-field="enabled" ${ing.enabled ? 'checked' : ''} class="w-4 h-4 rounded flex-shrink-0" style="accent-color:${ing.color}">
+                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${ing.color}"></span>
+                <input type="text" data-field="name" value="${esc(ing.name)}" placeholder="ชื่อวัตถุดิบ" class="flex-1 bg-transparent border-none text-sm font-semibold outline-none min-w-0 px-1" style="color:${ing.color}">
+                <button type="button" data-action="del" class="ing-del-btn" title="ลบ">✕</button>
+            </div>
+            <div class="grid gap-2.5" style="grid-template-columns:auto 1fr auto;">
+                <div>
+                    <div class="ing-label">ปริมาณ</div>
+                    <div class="flex items-center gap-1">
+                        <input type="number" data-field="qty" step="any" min="0" value="${ing.qty}" class="ing-field" style="width:64px;text-align:right;">
+                        <input type="text" data-field="unit" list="common-units" value="${esc(ing.unit)}" class="ing-field" style="width:56px;text-align:center;" placeholder="ml">
+                    </div>
+                </div>
+                <div>
+                    <div class="ing-label">ราคา (฿ / N หน่วย)</div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-gray-500 text-[11px] font-mono">฿</span>
+                        <input type="number" data-field="price" step="any" min="0" value="${ing.price}" class="ing-field" style="width:64px;text-align:right;">
+                        <span class="text-gray-600 text-[10px] font-mono">/</span>
+                        <input type="number" data-field="pricePer" step="any" min="0.001" value="${pricePerDisplay}" class="ing-field" style="width:56px;text-align:right;">
+                        <span class="text-gray-600 text-[10px] font-mono" data-unit-label>${esc(ing.unit)}</span>
+                    </div>
+                    <div class="ing-unit-cost" data-unit-cost>→ ฿${fmt(unitCost, 3)}/${esc(ing.unit)}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="ing-label">รวม</div>
+                    <div class="ing-total" style="color:${ing.color}" data-total>฿${fmt(total, 2)}</div>
+                </div>
+            </div>
+        </div>`;
     }
 
     function renderMixEditor(formulaKey) {
@@ -1326,22 +1297,10 @@
         $(countId).textContent = ings.length + ' รายการ';
 
         if (!ings.length) {
-            container.innerHTML = '<div class="text-center text-gray-600 text-xs py-4 font-mono">— ยังไม่มีวัตถุดิบ —</div>';
+            container.innerHTML = '<div class="text-center text-gray-600 text-xs py-4 font-mono">— ยังไม่มีวัตถุดิบ กด "+ เพิ่ม" —</div>';
             return;
         }
-
-        container.innerHTML = ings.map(ing => `
-            <div class="ing-row" data-formula="${formulaKey}" data-id="${esc(ing.id)}">
-                <input type="checkbox" data-field="enabled" ${ing.enabled ? 'checked' : ''} class="w-3.5 h-3.5 shrink-0 rounded" style="accent-color:${ing.color}">
-                <span class="w-2 h-2 rounded-full shrink-0" style="background:${ing.color}"></span>
-                <input type="text" value="${esc(ing.name)}" data-field="name" placeholder="ชื่อ" class="num-input flex-1 text-xs font-semibold min-w-0" style="color:${ing.color}">
-                <input type="number" step="any" min="0" value="${ing.qty}" data-field="qty" class="num-input w-14 text-xs text-right num-mono shrink-0">
-                <input type="text" value="${esc(ing.unit)}" data-field="unit" class="num-input w-9 text-[10px] text-gray-500 text-center shrink-0">
-                <span class="text-[10px] text-gray-500 font-mono">฿</span>
-                <input type="number" step="any" min="0" value="${ing.price}" data-field="price" class="num-input w-14 text-xs text-right num-mono shrink-0">
-                <button type="button" data-action="del" class="ing-del-btn">✕</button>
-            </div>
-        `).join('');
+        container.innerHTML = ings.map(ing => renderIngCard(ing, formulaKey, true)).join('');
     }
 
     function renderSettingsEditor(formulaKey) {
@@ -1355,24 +1314,10 @@
             container.innerHTML = '<div class="text-center text-gray-600 text-xs py-4 font-mono">— ยังไม่มีวัตถุดิบ กด "+ เพิ่ม" —</div>';
             return;
         }
-
-        container.innerHTML = ings.map(ing => `
-            <div class="ing-row" data-formula="${formulaKey}" data-id="${esc(ing.id)}">
-                <input type="checkbox" data-field="enabled" ${ing.enabled ? 'checked' : ''} class="w-3.5 h-3.5 shrink-0 rounded" style="accent-color:${ing.color}">
-                <span class="w-2 h-2 rounded-full shrink-0" style="background:${ing.color}"></span>
-                <input type="text" value="${esc(ing.name)}" data-field="name" placeholder="ชื่อ" class="num-input flex-1 text-xs font-semibold min-w-0" style="color:${ing.color}">
-                <input type="number" step="any" min="0" value="${ing.qty}" data-field="qty" class="num-input w-14 text-xs text-right num-mono shrink-0">
-                <input type="text" value="${esc(ing.unit)}" data-field="unit" class="num-input w-10 text-[10px] text-gray-500 text-center shrink-0">
-                <span class="text-[10px] text-gray-500 font-mono">฿</span>
-                <input type="number" step="any" min="0" value="${ing.price}" data-field="price" class="num-input w-14 text-xs text-right num-mono shrink-0">
-                <span class="text-[9px] text-gray-600 font-mono shrink-0">per</span>
-                <input type="number" step="any" min="0" value="${ing.pricePer || 1}" data-field="pricePer" class="num-input w-10 text-[10px] text-gray-500 text-right num-mono shrink-0">
-                <button type="button" data-action="del" class="ing-del-btn">✕</button>
-            </div>
-        `).join('');
+        container.innerHTML = ings.map(ing => renderIngCard(ing, formulaKey, false)).join('');
     }
 
-    /* Ingredient change handlers (delegated) */
+    /* ── Event Handlers ── */
     function handleIngredientInput(e) {
         const row = e.target.closest('[data-id]');
         if (!row) return;
@@ -1387,9 +1332,26 @@
         else if (field === 'price') ing.price = Math.max(0, parseNum(e.target.value));
         else if (field === 'pricePer') ing.pricePer = Math.max(0.001, parseNum(e.target.value) || 1);
         else if (field === 'name') ing.name = e.target.value;
-        else if (field === 'unit') ing.unit = e.target.value || 'ml';
+        else if (field === 'unit') {
+            ing.unit = e.target.value || 'ml';
+            row.querySelectorAll('[data-unit-label]').forEach(el => el.textContent = ing.unit);
+        }
+        else return;
 
-        onIngredientChange();
+        // ── In-place update (no re-render = no focus loss) ──
+        const unitCost = calcIngUnitCost(ing);
+        const total = calcIngTotal(ing);
+
+        const totalEl = row.querySelector('[data-total]');
+        if (totalEl) totalEl.textContent = '฿' + fmt(total, 2);
+
+        const unitCostEl = row.querySelector('[data-unit-cost]');
+        if (unitCostEl) unitCostEl.textContent = '→ ฿' + fmt(unitCost, 3) + '/' + ing.unit;
+
+        // Save + recalc mix (lightweight)
+        saveConfig();
+        renderRedMix();
+        renderBmMix();
     }
 
     function handleIngredientChange(e) {
@@ -1402,7 +1364,14 @@
         const ing = ings.find(i => i.id === id);
         if (!ing) return;
         ing.enabled = e.target.checked;
-        onIngredientChange();
+        saveConfig();
+        renderRedMix();
+        renderBmMix();
+        // Re-render to update color state
+        renderMixEditor('RED');
+        renderMixEditor('BM');
+        renderSettingsEditor('RED');
+        renderSettingsEditor('BM');
     }
 
     function handleIngredientClick(e) {
@@ -1414,19 +1383,21 @@
         const ings = formulaKey === 'RED' ? CONFIG.redIngredients : CONFIG.bmIngredients;
         const idx = ings.findIndex(i => i.id === id);
         if (idx < 0) return;
-        if (!confirm(`ลบ "${ings[idx].name}" ออกจากสูตร?`)) return;
+        const ingName = ings[idx].name || '(ไม่มีชื่อ)';
+        if (!confirm(`ลบ "${ingName}" ออกจากสูตร?`)) return;
         ings.splice(idx, 1);
-        onIngredientChange();
+        saveConfig();
+        rebuildAllEditors();
+        renderRedMix();
+        renderBmMix();
+        showToast('✓ ลบวัตถุดิบแล้ว');
     }
 
-    function onIngredientChange() {
-        saveConfig();
+    function rebuildAllEditors() {
         renderMixEditor('RED');
         renderMixEditor('BM');
         renderSettingsEditor('RED');
         renderSettingsEditor('BM');
-        renderRedMix();
-        renderBmMix();
     }
 
     function attachEditorListeners() {
@@ -1440,17 +1411,12 @@
         });
     }
 
-    function addMixIngredient(formulaKey) {
-        addIngredient(formulaKey);
-    }
-
-    function addSettingsIngredient(formulaKey) {
-        addIngredient(formulaKey);
-    }
+    function addMixIngredient(formulaKey) { addIngredient(formulaKey); }
+    function addSettingsIngredient(formulaKey) { addIngredient(formulaKey); }
 
     function addIngredient(formulaKey) {
         const ings = formulaKey === 'RED' ? CONFIG.redIngredients : CONFIG.bmIngredients;
-        ings.push({
+        const newIng = {
             id: formulaKey.toLowerCase() + '_custom_' + Date.now(),
             name: 'วัตถุดิบใหม่',
             unit: 'ml',
@@ -1459,16 +1425,36 @@
             price: 1,
             pricePer: 1,
             color: pickNextColor(ings)
-        });
-        onIngredientChange();
-        showToast('✓ เพิ่มวัตถุดิบใหม่แล้ว');
+        };
+        ings.push(newIng);
+        saveConfig();
+        rebuildAllEditors();
+        renderRedMix();
+        renderBmMix();
+        showToast('✓ เพิ่มวัตถุดิบ · แก้ไขชื่อ/ราคาได้เลย');
+
+        // Auto-focus the new ingredient's name field
+        setTimeout(() => {
+            const containerId = formulaKey === 'RED' ? 'setRedList' : 'setBmList';
+            const row = document.querySelector(`#${containerId} [data-id="${newIng.id}"]`);
+            if (row) {
+                const nameInput = row.querySelector('[data-field="name"]');
+                if (nameInput) {
+                    nameInput.focus();
+                    nameInput.select();
+                }
+            }
+        }, 80);
     }
 
     function resetIngredients(formulaKey) {
         if (!confirm(`คืนค่าวัตถุดิบสูตร ${formulaKey} กลับเป็นค่าเริ่มต้น?`)) return;
         if (formulaKey === 'RED') CONFIG.redIngredients = JSON.parse(JSON.stringify(DEFAULT_CONFIG.redIngredients));
         else CONFIG.bmIngredients = JSON.parse(JSON.stringify(DEFAULT_CONFIG.bmIngredients));
-        onIngredientChange();
+        saveConfig();
+        rebuildAllEditors();
+        renderRedMix();
+        renderBmMix();
         showToast('✓ คืนค่าเริ่มต้นแล้ว');
     }
 
@@ -1484,61 +1470,42 @@
         $('setSellRed').value = CONFIG.sellPriceRed;
         $('setSellBm').value = CONFIG.sellPriceBm;
         $('setSellOriginal').value = CONFIG.sellPriceOriginal;
-
-        // Brew config
         $('cfgRatio').value = CONFIG.ratio;
         $('cfgExtract').value = CONFIG.extractPercent;
-        $('cfgEvap').value = CONFIG.evaporationPercent;
         $('cfgBottleMl').value = CONFIG.bottleMl;
-
-        // Mix config
         $('cfgBaseWater').value = CONFIG.mixBaseWater;
         $('cfgBottlePerL').value = CONFIG.mixBottlePerLiter;
         $('cfgYield').value = CONFIG.mixYieldPercent;
-
-        // Update summary
         updateMixCfgSummary();
     }
 
     function updateMixCfgSummary() {
-        const s = `base ${CONFIG.mixBaseWater}L · ${CONFIG.mixBottlePerLiter} ขวด/L · yield ${CONFIG.mixYieldPercent}%`;
-        $('mixCfgSummary').textContent = s;
+        $('mixCfgSummary').textContent = `base ${CONFIG.mixBaseWater}L · ${CONFIG.mixBottlePerLiter} ขวด/L · yield ${CONFIG.mixYieldPercent}%`;
     }
 
     function bindConfigInputs() {
         const bindings = [
-            ['cfgRatio', 'ratio', 1],
-            ['cfgExtract', 'extractPercent', 100],
-            ['cfgEvap', 'evaporationPercent', 50],
-            ['cfgBottleMl', 'bottleMl', 50],
-            ['cfgBaseWater', 'mixBaseWater', 0.1],
-            ['cfgBottlePerL', 'mixBottlePerLiter', 0.1],
-            ['cfgYield', 'mixYieldPercent', 100],
-            ['setCostLeaves', 'costLeaves', 0],
-            ['setCostBottle', 'costBottle', 0],
-            ['setCostHidden', 'costHidden', 0],
-            ['setUtility', 'brewUtilityCostPerLiter', 0],
-            ['setLabor', 'brewLaborCostPerKg', 0],
-            ['setSellRed', 'sellPriceRed', 0],
-            ['setSellBm', 'sellPriceBm', 0],
-            ['setSellOriginal', 'sellPriceOriginal', 0]
+            ['cfgRatio', 'ratio'], ['cfgExtract', 'extractPercent'], ['cfgBottleMl', 'bottleMl'],
+            ['cfgBaseWater', 'mixBaseWater'], ['cfgBottlePerL', 'mixBottlePerLiter'], ['cfgYield', 'mixYieldPercent'],
+            ['setCostLeaves', 'costLeaves'], ['setCostBottle', 'costBottle'], ['setCostHidden', 'costHidden'],
+            ['setUtility', 'brewUtilityCostPerLiter'], ['setLabor', 'brewLaborCostPerKg'],
+            ['setSellRed', 'sellPriceRed'], ['setSellBm', 'sellPriceBm'], ['setSellOriginal', 'sellPriceOriginal']
         ];
 
-        bindings.forEach(([id, key, min]) => {
+        bindings.forEach(([id, key]) => {
             const el = $(id);
             if (!el) return;
             el.addEventListener('input', e => {
                 let v = parseNum(e.target.value);
-                if (min === 0.1) v = Math.max(0.1, v);
-                else if (min === 50) v = Math.max(50, v);
-                else if (min === 100) v = Math.max(1, Math.min(100, v));
-                else if (min === 50) v = Math.max(0, Math.min(50, v));
+                if (key === 'ratio') v = Math.max(1, v);
+                else if (key === 'extractPercent') v = Math.max(1, Math.min(100, v));
+                else if (key === 'bottleMl') v = Math.max(50, v);
+                else if (key === 'mixBaseWater') v = Math.max(0.1, v);
+                else if (key === 'mixBottlePerLiter') v = Math.max(0.1, v);
+                else if (key === 'mixYieldPercent') v = Math.max(1, Math.min(100, v));
                 else v = Math.max(0, v);
-
                 CONFIG[key] = v;
                 saveConfig();
-
-                // Update brew/mix views
                 renderBrew();
                 updateMixCfgSummary();
                 renderRedMix();
@@ -1557,10 +1524,7 @@
         CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
         saveConfig();
         loadSettingsForm();
-        renderMixEditor('RED');
-        renderMixEditor('BM');
-        renderSettingsEditor('RED');
-        renderSettingsEditor('BM');
+        rebuildAllEditors();
         renderBrew();
         renderRedMix();
         renderBmMix();
@@ -1572,10 +1536,7 @@
         localStorage.removeItem(STORAGE_KEY);
         CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
         loadSettingsForm();
-        renderMixEditor('RED');
-        renderMixEditor('BM');
-        renderSettingsEditor('RED');
-        renderSettingsEditor('BM');
+        rebuildAllEditors();
         renderBrew();
         renderRedMix();
         renderBmMix();
@@ -1681,12 +1642,11 @@
     /* ══════════════════════════════════════════════════════════ */
     function init() {
         console.log('%c🍃 KRATOM Calculator Pro ' + APP_VERSION, 'color:#10b981;font-weight:bold;font-size:14px');
-        console.log('%c   Brew: evaporation ' + CONFIG.evaporationPercent + '% | Mix: yield ' + CONFIG.mixYieldPercent + '%', 'color:#22d3ee;font-weight:600');
+        console.log('%c   Ingredient editor: inline edit (no focus loss) + live cost preview', 'color:#22d3ee;font-weight:600');
 
         $('versionBadge').textContent = APP_VERSION;
         $('footerVersion').textContent = APP_VERSION;
 
-        // Setup UI
         setupTabs();
         setupCollapse();
         setupStepButtons();
@@ -1694,22 +1654,15 @@
         bindConfigInputs();
         attachEditorListeners();
 
-        // Render editors
-        renderMixEditor('RED');
-        renderMixEditor('BM');
-        renderSettingsEditor('RED');
-        renderSettingsEditor('BM');
+        rebuildAllEditors();
 
-        // Initial state: leaves = 3
         brewState.leaves = 3;
         brewState.lastInput = 'leaves';
         $('brewLeaves').value = 3;
 
-        // Initial values for mix (water input 0 = don't auto-forward)
         mixRed.waterInput = 0;
         mixBm.waterInput = 0;
 
-        // Render
         renderBrew();
         renderRedMix();
         renderBmMix();
