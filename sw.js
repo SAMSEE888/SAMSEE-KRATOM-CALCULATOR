@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'kratom-calc-v5.0.0';
+const CACHE_VERSION = 'kratom-calc-v5.2.0';
 const PRECACHE_URLS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
